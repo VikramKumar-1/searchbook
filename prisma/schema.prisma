@@ -1,0 +1,320 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  USER
+  PROVIDER
+  ADMIN
+}
+
+enum PriceType {
+  PER_MONTH
+  PER_DAY
+  PER_HOUR
+  ONE_TIME
+  PER_MEAL
+}
+
+enum TenantType {
+  BACHELOR
+  FAMILY
+  GIRLS_ONLY
+  BOYS_ONLY
+  ANYONE
+}
+
+enum FurnishingType {
+  FURNISHED
+  SEMI_FURNISHED
+  UNFURNISHED
+}
+
+enum BhkType {
+  RK_1
+  BHK_1
+  BHK_2
+  BHK_3
+  BHK_4_PLUS
+}
+
+enum BookingStatus {
+  CONFIRMED
+  CHECKED_IN
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentType {
+  PAY_AT_HOTEL
+  ONLINE
+}
+
+enum StayPackage {
+  HOURLY_2H
+  HOURLY_3H
+  HOURLY_6H
+  DAY_ONLY
+  NIGHT_ONLY
+  FULL_DAY
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  phone         String?   @unique
+  password      String?
+  avatar        String?
+  role          Role      @default(USER)
+  isPremium     Boolean   @default(false)
+  
+  listings      Listing[]
+  reviews       Review[]
+  bookmarks     Bookmark[]
+  bookings      Booking[]
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+
+  @@map("users")
+}
+
+model City {
+  id            String    @id @default(cuid())
+  name          String    @unique
+  slug          String    @unique
+  isActive      Boolean   @default(true)
+  
+  localities    Locality[]
+  listings      Listing[]
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@map("cities")
+}
+
+model Locality {
+  id            String    @id @default(cuid())
+  name          String
+  slug          String    @unique
+  cityId        String
+  city          City      @relation(fields: [cityId], references: [id])
+  isActive      Boolean   @default(true)
+  
+  landmarks     Landmark[]
+  listings      Listing[]
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([name])
+  @@index([cityId])
+  @@map("localities")
+}
+
+model Landmark {
+  id            String    @id @default(cuid())
+  name          String
+  slug          String    @unique
+  localityId    String
+  locality      Locality  @relation(fields: [localityId], references: [id])
+  isActive      Boolean   @default(true)
+  
+  listings      Listing[]
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([name])
+  @@index([localityId])
+  @@map("landmarks")
+}
+
+model Category {
+  id            String    @id @default(cuid())
+  name          String    @unique
+  slug          String    @unique
+  icon          String?
+  
+  listings      Listing[]
+  subCategories SubCategory[]
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@map("categories")
+}
+
+model SubCategory {
+  id            String    @id @default(cuid())
+  name          String
+  slug          String    @unique
+  categoryId    String
+  category      Category  @relation(fields: [categoryId], references: [id])
+  
+  listings      Listing[]
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([categoryId])
+  @@map("sub_categories")
+}
+
+model Listing {
+  id            String    @id @default(cuid())
+  title         String    @db.VarChar(200)
+  slug          String    @unique
+  description   String    @db.Text
+  price         Decimal?  @db.Decimal(10, 2)
+  priceType     PriceType?
+  
+  address       String    @db.VarChar(500)
+  latitude      Float?
+  longitude     Float?
+  serviceRadiusKm Float?
+  photos        String[]
+  amenities     String[]
+  
+  // Flat / PG specific
+  tenantType      TenantType?
+  furnishing      FurnishingType?
+  bhkType         BhkType?
+  
+  // Hourly Hotel specific operating window
+  openingTime     String?       @default("08:00 AM")
+  closingTime     String?       @default("11:00 PM")
+  totalRooms      Int?          @default(5)
+  
+  // "Something Else" custom category
+  customCategory  String?       @db.VarChar(100)
+  
+  contactPhone  String
+  contactWhatsApp String?
+  
+  userId        String
+  user          User      @relation(fields: [userId], references: [id])
+  cityId        String
+  city          City      @relation(fields: [cityId], references: [id])
+  localityId    String?
+  locality      Locality? @relation(fields: [localityId], references: [id])
+  landmarkId    String?
+  landmark      Landmark? @relation(fields: [landmarkId], references: [id])
+  categoryId    String
+  category      Category  @relation(fields: [categoryId], references: [id])
+  subCategoryId String?
+  subCategory   SubCategory? @relation(fields: [subCategoryId], references: [id])
+  
+  isActive      Boolean   @default(true)
+  isVerified    Boolean   @default(false)
+  isFeatured    Boolean   @default(false)
+  viewCount     Int       @default(0)
+  
+  reviews       Review[]
+  bookmarks     Bookmark[]
+  bookings      Booking[]
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+
+  @@index([cityId, categoryId, isActive])
+  @@index([latitude, longitude])
+  @@index([localityId])
+  @@index([landmarkId])
+  @@index([userId])
+  @@index([createdAt])
+  @@index([slug])
+  @@map("listings")
+}
+
+model Review {
+  id            String    @id @default(cuid())
+  rating        Int       // 1-5
+  comment       String    @db.Text
+  guestName     String?
+  bookingId     String?
+  
+  userId        String?
+  user          User?     @relation(fields: [userId], references: [id])
+  listingId     String
+  listing       Listing   @relation(fields: [listingId], references: [id])
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+
+  @@index([listingId])
+  @@index([userId])
+  @@map("reviews")
+}
+
+model Bookmark {
+  id            String    @id @default(cuid())
+  
+  userId        String
+  user          User      @relation(fields: [userId], references: [id])
+  listingId     String
+  listing       Listing   @relation(fields: [listingId], references: [id])
+
+  createdAt     DateTime  @default(now())
+
+  @@index([userId])
+  @@index([listingId])
+  @@unique([userId, listingId])
+  @@map("bookmarks")
+}
+
+model Booking {
+  id              String         @id @default(cuid())
+  bookingCode     String         @unique // e.g. "SB-HTL-1234"
+  
+  listingId       String
+  listing         Listing        @relation(fields: [listingId], references: [id])
+  
+  guestName       String         @db.VarChar(100)
+  guestPhone      String         @db.VarChar(20)
+  guestEmail      String?        @db.VarChar(100)
+  
+  checkInDate     String         // YYYY-MM-DD
+  checkInTime     String         // e.g. "02:00 PM"
+  checkOutTime    String?        // e.g. "05:00 PM"
+  durationHours   Int            @default(2) // 2, 3, 6, 9, 12, 24
+  stayPackage     StayPackage?   @default(HOURLY_2H)
+  guestsCount     Int            @default(2)
+  specialRequests String?        @db.Text
+  
+  // Express Digital Check-in (Zero-Desk Friction)
+  guestIdType     String?        // "Aadhaar Card", "Driving License", "Voter ID", "Passport"
+  guestIdNumber   String?        // e.g. "XXXX-XXXX-8921"
+  guestIdPhoto    String?        // Uploaded ID image URL
+  
+  totalAmount     Decimal?       @db.Decimal(10, 2)
+  paymentType     PaymentType    @default(PAY_AT_HOTEL)
+  status          BookingStatus  @default(CONFIRMED)
+  isReviewed      Boolean        @default(false)
+  
+  userId          String?
+  user            User?          @relation(fields: [userId], references: [id])
+  
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  deletedAt       DateTime?
+
+  @@index([listingId])
+  @@index([userId])
+  @@index([guestPhone])
+  @@index([status])
+  @@index([createdAt])
+  @@map("bookings")
+}
