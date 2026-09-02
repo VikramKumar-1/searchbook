@@ -8,13 +8,16 @@ interface ImageGalleryUploaderProps {
   photos: string[];
   onChange: (photos: string[]) => void;
   maxGalleryPhotos?: number;
+  maxPhotos?: number;
 }
 
 export function ImageGalleryUploader({
   photos = [],
   onChange,
   maxGalleryPhotos = 9,
+  maxPhotos,
 }: ImageGalleryUploaderProps) {
+  const maxGalleryCount = maxPhotos ? maxPhotos - 1 : maxGalleryPhotos;
   const [isUploadingCover, setIsUploadingCover] = useState(false);
   const [isUploadingGallery, setIsUploadingGallery] = useState(false);
   const [uploadError, setUploadError] = useState('');

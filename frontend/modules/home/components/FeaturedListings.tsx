@@ -1,37 +1,30 @@
 'use client';
 
 import React from 'react';
-import { useListings } from '@frontend/modules/listing/hooks/useListings';
+import { useListings, ListingCardItem } from '@frontend/modules/listing/hooks/useListings';
 import { ListingCard } from '@frontend/modules/listing/components/ListingCard';
 import { Loader2 } from 'lucide-react';
-
-type ListingCardData = {
-  id: string;
-  title: string;
-  slug: string;
-  price: string | number;
-  priceType: string;
-  photos: string[];
-  city: { id: string; name: string; slug: string };
-  category: { id: string; name: string; slug: string; icon: string | null };
-  _count: { reviews: number };
-};
 
 export function FeaturedListings() {
   const { data, isLoading, isError, error } = useListings({ page: 1, limit: 8 });
 
   // Generate mock data if API is empty
-  const displayData = data?.data && data.data.length > 0 
+  const displayData: ListingCardItem[] = data?.data && data.data.length > 0 
     ? data.data.slice(0, 8) 
     : Array.from({ length: 8 }).map((_, i) => ({
         id: `mock-feat-${i}`,
         title: `Premium Verified Listing ${i + 1}`,
         slug: `mock-feat-${i}`,
         price: 8500 + (i * 500),
-        priceType: 'MONTH',
+        priceType: 'PER_MONTH',
+        address: 'City Center',
+        latitude: 28.6139,
+        longitude: 77.2090,
         photos: [],
         city: { id: 'city1', name: 'Delhi NCR', slug: 'delhi' },
         category: { id: 'cat1', name: 'Top Rated', slug: 'top', icon: null },
+        contactPhone: '9876543210',
+        contactWhatsApp: '9876543210',
         _count: { reviews: 24 + i }
       }));
 
@@ -69,7 +62,7 @@ export function FeaturedListings() {
         {/* Grid */}
         {!isLoading && !isError && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-            {displayData.map((listing: ListingCardData, index: number) => {
+            {displayData.map((listing: ListingCardItem, index: number) => {
               // Alternate fallback images for featured section to make it look dynamic
               const images = [
                 '/api/services/flat',

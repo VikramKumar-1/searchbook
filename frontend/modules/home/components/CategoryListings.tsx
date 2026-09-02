@@ -1,47 +1,55 @@
 'use client';
 
 import React from 'react';
-import { useListings } from '@frontend/modules/listing/hooks/useListings';
+import { useListings, ListingCardItem } from '@frontend/modules/listing/hooks/useListings';
 import { ListingCard } from '@frontend/modules/listing/components/ListingCard';
 import { Loader2 } from 'lucide-react';
-
-type ListingCardData = {
-  id: string;
-  title: string;
-  slug: string;
-  price: string | number;
-  priceType: string;
-  photos: string[];
-  city: { id: string; name: string; slug: string };
-  category: { id: string; name: string; slug: string; icon: string | null };
-  _count: { reviews: number };
-};
 
 interface CategoryListingsProps {
   title: string;
   subtitle: string;
-  pageParam: number;
+  categorySlug?: string;
+  pageParam?: number;
   bgWhite?: boolean;
   fallbackImage?: string;
 }
 
-export function CategoryListings({ title, subtitle, pageParam, bgWhite = false, fallbackImage }: CategoryListingsProps) {
-  const { data, isLoading, isError, error } = useListings({ page: pageParam, limit: 4 });
+export function CategoryListings({
+  title,
+  subtitle,
+  categorySlug,
+  pageParam = 1,
+  bgWhite = false,
+  fallbackImage,
+}: CategoryListingsProps) {
+  const { data, isLoading, isError, error } = useListings({
+    categorySlug: categorySlug || undefined,
+    page: pageParam,
+    limit: 4,
+  });
 
-  // Generate mock data if API is empty for this page
-  const displayData = data?.data && data.data.length > 0 
-    ? data.data.slice(0, 4) 
+  // If real listings exist in this category, display them
+  const hasRealData = data?.data && data.data.length > 0;
+  const displayData: ListingCardItem[] = hasRealData
+    ? data.data.slice(0, 4)
     : Array.from({ length: 4 }).map((_, i) => ({
-        id: `mock-${pageParam}-${i}`,
+        id: `mock-${categorySlug || pageParam}-${i}`,
         title: `Premium ${title.split(' ')[0]} in City Center`,
-        slug: `mock-${pageParam}-${i}`,
-        price: 4500 + (i * 1000),
-        priceType: 'MONTH',
+        slug: `mock-${categorySlug || pageParam}-${i}`,
+        price: 4500 + i * 1000,
+        priceType: 'PER_MONTH',
+        address: 'City Center',
+        latitude: 28.6139,
+        longitude: 77.2090,
         photos: [],
         city: { id: 'city1', name: 'Delhi NCR', slug: 'delhi' },
-        category: { id: 'cat1', name: title.split(' ')[0], slug: 'cat', icon: null },
-        _count: { reviews: 12 + i }
+        category: { id: 'cat1', name: title.split(' ')[0], slug: categorySlug || 'cat', icon: null },
+        contactPhone: '9876543210',
+        contactWhatsApp: '9876543210',
+        _count: { reviews: 12 + i },
       }));
+
+  const exploreUrl = categorySlug ? `/listings?category=${categorySlug}` : '/listings';
 
   return (
     <section className={`${bgWhite ? 'bg-white' : 'bg-[#FAFBFD]'} py-14 px-5 md:px-8 border-b border-gray-100/80`}>
@@ -54,7 +62,10 @@ export function CategoryListings({ title, subtitle, pageParam, bgWhite = false, 
               {title}
             </h2>
           </div>
-          <a href="/listings" className="text-sm font-bold text-[#0033CC] hover:underline hidden md:block shrink-0 ml-4">
+          <a
+            href={exploreUrl}
+            className="text-sm font-bold text-[#0033CC] hover:underline hidden md:block shrink-0 ml-4"
+          >
             View all →
           </a>
         </div>
@@ -70,14 +81,14 @@ export function CategoryListings({ title, subtitle, pageParam, bgWhite = false, 
         {/* Error */}
         {isError && (
           <div className="bg-red-50 text-red-500 p-5 rounded-xl border border-red-100 text-center text-sm font-medium">
-            {error.message}
+            {error?.message || 'Failed to load listings'}
           </div>
         )}
 
         {/* Grid */}
         {!isLoading && !isError && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-            {displayData.map((listing: ListingCardData) => (
+            {displayData.map((listing: ListingCardItem) => (
               <ListingCard 
                 key={listing.id} 
                 listing={listing} 
@@ -90,3 +101,4 @@ export function CategoryListings({ title, subtitle, pageParam, bgWhite = false, 
     </section>
   );
 }
+

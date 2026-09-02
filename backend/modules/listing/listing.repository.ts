@@ -4,6 +4,41 @@ import { ListingQuery } from './listing.validator';
 import { getBoundingBox } from '@backend/utils/geo';
 import { Prisma } from '@prisma/client';
 
+function getCategorySlugAliases(slug: string): string[] {
+  const s = slug.toLowerCase().trim();
+  const base = s.split('-')[0];
+  const map: Record<string, string[]> = {
+    'pg-hostel': ['pg-hostel', 'hostel', 'pg', 'boys-pg', 'girls-pg', 'co-living', 'hostels', 'pgs', 'pg-and-hostel'],
+    'hourly-hotels': ['hourly-hotels', 'hotels', 'hourly-hotel', 'hotel', 'couples-hotel', 'stay', 'rooms'],
+    'flats': ['flats', 'flat', 'apartments', 'apartment', 'house-rent', 'room-rent', 'bhk'],
+    'mess-tiffin': ['mess-tiffin', 'tiffin', 'mess', 'food', 'home-cook', 'tiffin-service'],
+    'gas-delivery': ['gas-delivery', 'gas', 'gas-agency', 'lpg-gas', 'gas-cylinder'],
+    'maid': ['maid', 'housemaid', 'helper', 'bai', 'cleaning'],
+    'plumber': ['plumber', 'plumbing', 'tap-repair'],
+    'electrician': ['electrician', 'electrical', 'wiring'],
+    'ac-repair': ['ac-repair', 'ac-service', 'ac'],
+    'water-supply': ['water-supply', 'water-tanker', 'water'],
+    'laundry': ['laundry', 'dry-clean', 'ironing', 'wash'],
+  };
+  return map[s] || [s, base];
+}
+
+function getCitySlugAliases(slug: string): string[] {
+  const s = slug.toLowerCase().trim();
+  const map: Record<string, string[]> = {
+    'delhi': ['delhi', 'new-delhi', 'delhi-ncr', 'ncr'],
+    'new-delhi': ['delhi', 'new-delhi', 'delhi-ncr', 'ncr'],
+    'delhi-ncr': ['delhi', 'new-delhi', 'delhi-ncr', 'ncr'],
+    'gurugram': ['gurugram', 'gurgaon', 'delhi-ncr'],
+    'gurgaon': ['gurugram', 'gurgaon', 'delhi-ncr'],
+    'noida': ['noida', 'greater-noida', 'delhi-ncr'],
+    'ranchi': ['ranchi'],
+    'chandigarh': ['chandigarh', 'mohali', 'panchkula'],
+    'bengaluru': ['bengaluru', 'bangalore'],
+  };
+  return map[s] || [s];
+}
+
 export const listingRepository = {
   /**
    * Retrieves paginated listings based on provided filters.
@@ -13,12 +48,21 @@ export const listingRepository = {
     const where: Prisma.ListingWhereInput = {
       isActive: true,
       deletedAt: null,
-      ...(query.citySlug && { city: { slug: query.citySlug } }),
-      ...(query.categorySlug && { category: { slug: query.categorySlug } }),
+      ...(query.citySlug && {
+        city: {
+          slug: { in: getCitySlugAliases(query.citySlug) },
+        },
+      }),
+      ...(query.categorySlug && {
+        category: {
+          slug: { in: getCategorySlugAliases(query.categorySlug) },
+        },
+      }),
       ...(query.search && {
         OR: [
           { title: { contains: query.search, mode: 'insensitive' as const } },
           { description: { contains: query.search, mode: 'insensitive' as const } },
+          { address: { contains: query.search, mode: 'insensitive' as const } },
         ],
       }),
     };

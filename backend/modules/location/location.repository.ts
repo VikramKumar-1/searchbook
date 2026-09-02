@@ -6,13 +6,14 @@ export class LocationRepository {
    * This uses Prisma's `contains` filter. In production with a huge DB, 
    * this would leverage PostgreSQL's pg_trgm indices for blazing fast results.
    */
-  async searchAll(query: string, limit: number = 5) {
-    const [cities, localities, landmarks] = await Promise.all([
+  async searchAll(query: string, limit: number = 6) {
+    const cleanQuery = query.trim();
+    const [cities, localities, landmarks, listings] = await Promise.all([
       // 1. Search Cities
       prisma.city.findMany({
         where: {
           name: {
-            contains: query,
+            contains: cleanQuery,
             mode: 'insensitive',
           },
           isActive: true,
@@ -29,8 +30,8 @@ export class LocationRepository {
       prisma.locality.findMany({
         where: {
           OR: [
-            { name: { contains: query, mode: 'insensitive' } },
-            { city: { name: { contains: query, mode: 'insensitive' } } }
+            { name: { contains: cleanQuery, mode: 'insensitive' } },
+            { city: { name: { contains: cleanQuery, mode: 'insensitive' } } },
           ],
           isActive: true,
         },
@@ -47,9 +48,9 @@ export class LocationRepository {
       prisma.landmark.findMany({
         where: {
           OR: [
-            { name: { contains: query, mode: 'insensitive' } },
-            { locality: { name: { contains: query, mode: 'insensitive' } } },
-            { locality: { city: { name: { contains: query, mode: 'insensitive' } } } }
+            { name: { contains: cleanQuery, mode: 'insensitive' } },
+            { locality: { name: { contains: cleanQuery, mode: 'insensitive' } } },
+            { locality: { city: { name: { contains: cleanQuery, mode: 'insensitive' } } } },
           ],
           isActive: true,
         },
@@ -67,8 +68,28 @@ export class LocationRepository {
           },
         },
       }),
+
+      // 4. Search Active Listings for locations/addresses
+      prisma.listing.findMany({
+        where: {
+          OR: [
+            { address: { contains: cleanQuery, mode: 'insensitive' } },
+            { title: { contains: cleanQuery, mode: 'insensitive' } },
+          ],
+          isActive: true,
+          deletedAt: null,
+        },
+        take: limit,
+        select: {
+          id: true,
+          title: true,
+          address: true,
+          city: { select: { name: true, slug: true } },
+          locality: { select: { name: true, slug: true } },
+        },
+      }),
     ]);
 
-    return { cities, localities, landmarks };
+    return { cities, localities, landmarks, listings };
   }
 }

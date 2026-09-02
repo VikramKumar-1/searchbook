@@ -5,10 +5,10 @@ import { Menu, X } from 'lucide-react';
 import { useAuthStore } from '@frontend/stores/authStore';
 
 const navLinks = [
-  { label: 'PG & Hostels', href: '/category/pg-hostel' },
-  { label: 'Food', href: '/category/food' },
-  { label: 'Services', href: '/category/services' },
-  { label: 'Jobs', href: '/category/jobs' },
+  { label: 'PG & Hostels', href: '/listings?category=pg-hostel' },
+  { label: 'Flats', href: '/listings?category=flats' },
+  { label: 'Hourly Hotels', href: '/listings?category=hourly-hotels' },
+  { label: 'Services', href: '/listings' },
 ];
 
 export function Navbar() {

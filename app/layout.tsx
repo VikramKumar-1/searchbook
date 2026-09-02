@@ -3,8 +3,8 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { QueryProvider } from '@frontend/providers/QueryProvider';
 import { AuthModalProvider } from '@frontend/providers/AuthModalProvider';
-import { Navbar } from '@frontend/components/layout/Navbar';
-import { Footer } from '@frontend/components/layout/Footer';
+import { Navbar } from '@frontend/modules/core/components/layout/Navbar';
+import { Footer } from '@frontend/modules/core/components/layout/Footer';
 import { PostCheckoutReviewModal } from '@frontend/components/review/PostCheckoutReviewModal';
 
 const inter = Inter({ subsets: ['latin'] });

@@ -1,21 +1,9 @@
 'use client';
 
 import React from 'react';
-import { useListings } from '@frontend/modules/listing/hooks/useListings';
+import { useListings, ListingCardItem } from '@frontend/modules/listing/hooks/useListings';
 import { ListingCard } from '@frontend/modules/listing/components/ListingCard';
 import { Loader2 } from 'lucide-react';
-
-type ListingCardData = {
-  id: string;
-  title: string;
-  slug: string;
-  price: string | number;
-  priceType: string;
-  photos: string[];
-  city: { id: string; name: string; slug: string };
-  category: { id: string; name: string; slug: string; icon: string | null };
-  _count: { reviews: number };
-};
 
 export function MoreListingsSection() {
   const { data, isLoading, isError, error } = useListings({ page: 2, limit: 4 });
@@ -28,19 +16,19 @@ export function MoreListingsSection() {
           <div>
             <p className="text-xs font-bold text-[#0033CC] uppercase tracking-widest mb-1">Discover Daily Needs</p>
             <h2 className="text-xl md:text-3xl lg:text-4xl font-black text-[#0f172a] tracking-tight max-w-3xl">
-              Hostel/PGs, Flats/Apartment, Mess/Tiffin Services, Gas Connection
+              More Services & Living Spaces
             </h2>
+            <p className="text-xs md:text-sm text-gray-500 font-medium mt-1">
+              Explore trusted accommodations, rentals, and hyperlocal home maintenance nearby
+            </p>
           </div>
-          <a href="/listings" className="text-sm font-bold text-[#0033CC] hover:underline hidden md:block shrink-0 ml-4">
-            View all →
-          </a>
         </div>
 
         {/* Loading */}
         {isLoading && (
-          <div className="flex flex-col items-center justify-center py-16">
-            <Loader2 className="h-8 w-8 animate-spin text-[#0033CC] mb-3" />
-            <p className="text-gray-400 text-sm font-medium">Loading properties...</p>
+          <div className="flex flex-col items-center justify-center py-16 gap-3">
+            <Loader2 className="w-8 h-8 animate-spin text-[#0033CC]" />
+            <span className="text-xs font-bold text-gray-400">Finding recommendations...</span>
           </div>
         )}
 
@@ -59,8 +47,8 @@ export function MoreListingsSection() {
                 <p className="text-gray-300 text-base font-bold">No new listings</p>
               </div>
             ) : (
-              data.data.slice(0, 4).map((listing: Record<string, unknown>) => (
-                <ListingCard key={listing.id as string} listing={listing as ListingCardData} />
+              data.data.slice(0, 4).map((listing: ListingCardItem) => (
+                <ListingCard key={listing.id} listing={listing} />
               ))
             )}
           </div>

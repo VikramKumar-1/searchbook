@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Search, MapPin, Grid, CheckCircle2 } from 'lucide-react';
-import { LocationAutocomplete } from '@frontend/components/home/LocationAutocomplete';
+import { LocationAutocomplete } from '@frontend/modules/home/components/LocationAutocomplete';
 
 const categoryOptions = {
   'pg-hostel': [
@@ -53,6 +54,7 @@ const categoryOptions = {
 type TabType = 'pg-hostel' | 'flats' | 'services' | 'tiffin' | 'hourly-hotels';
 
 export function HeroSection() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<TabType>('pg-hostel');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -62,6 +64,12 @@ export function HeroSection() {
     setActiveTab(tab);
     setSelectedCategory('all');
     setIsDropdownOpen(false);
+  };
+
+  const handleSearchClick = () => {
+    const params = new URLSearchParams();
+    if (activeTab) params.set('category', activeTab);
+    router.push(`/listings?${params.toString()}`);
   };
 
   return (
@@ -76,10 +84,6 @@ export function HeroSection() {
             backgroundSize: '24px 24px',
           }}
         />
-
-        {/* Glow effects */}
-        <div className="absolute top-[-100px] right-[-50px] w-[500px] h-[500px] bg-[#CCFF00] rounded-full opacity-[0.08] blur-[120px]" />
-        <div className="absolute bottom-[-150px] left-[-100px] w-[400px] h-[400px] bg-cyan-400 rounded-full opacity-[0.06] blur-[100px]" />
         
         {/* Bottom wave divider */}
         <div className="absolute bottom-0 left-0 right-0 z-20 pointer-events-auto">
@@ -199,6 +203,10 @@ export function HeroSection() {
                           onClick={() => {
                             setSelectedCategory(opt.value);
                             setIsDropdownOpen(false);
+                            const params = new URLSearchParams();
+                            params.set('category', activeTab);
+                            if (opt.value !== 'all') params.set('search', opt.label);
+                            router.push(`/listings?${params.toString()}`);
                           }}
                           className={`w-full text-left px-3 py-2.5 text-xs font-semibold rounded-xl transition-all cursor-pointer ${
                             selectedCategory === opt.value 
@@ -213,7 +221,10 @@ export function HeroSection() {
                   )}
                 </div>
 
-                <button className="bg-[#0033CC] text-white font-bold text-xs px-6 py-3 rounded-xl hover:bg-[#002299] transition-colors flex items-center justify-center gap-1.5 shadow-md shrink-0 cursor-pointer">
+                <button
+                  onClick={handleSearchClick}
+                  className="bg-[#0033CC] text-white font-bold text-xs px-6 py-3 rounded-xl hover:bg-[#002299] transition-colors flex items-center justify-center gap-1.5 shadow-md shrink-0 cursor-pointer"
+                >
                   <Search className="w-3.5 h-3.5" />
                   Search
                 </button>

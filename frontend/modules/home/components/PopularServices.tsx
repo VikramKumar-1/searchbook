@@ -3,7 +3,9 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 
-// Client-side automatic background stripper to render 100% transparent PNGs
+// Global memory cache for transparent character dataURLs
+const imageCache = new Map<string, string>();
+
 function TransparentServiceImage({
   src,
   alt,
@@ -13,9 +15,14 @@ function TransparentServiceImage({
   alt: string;
   className?: string;
 }) {
-  const [dataUrl, setDataUrl] = useState<string | null>(null);
+  const [dataUrl, setDataUrl] = useState<string | null>(() => imageCache.get(src) || null);
 
   useEffect(() => {
+    if (imageCache.has(src)) {
+      setDataUrl(imageCache.get(src)!);
+      return;
+    }
+
     const img = new Image();
     img.crossOrigin = 'anonymous';
     img.src = src;
@@ -41,27 +48,31 @@ function TransparentServiceImage({
         const bgG = (d[1] + d[(canvas.width - 1) * 4 + 1]) / 2;
         const bgB = (d[2] + d[(canvas.width - 1) * 4 + 2]) / 2;
 
+        const THRESHOLD_TRANSPARENT_SQ = 36 * 36;
+        const THRESHOLD_SMOOTH_SQ = 62 * 62;
+
         for (let i = 0; i < d.length; i += 4) {
           const r = d[i];
           const g = d[i + 1];
           const b = d[i + 2];
 
-          // Color distance from background & pure white
-          const distBg = Math.sqrt((r - bgR) ** 2 + (g - bgG) ** 2 + (b - bgB) ** 2);
-          const distWhite = Math.sqrt((r - 255) ** 2 + (g - 255) ** 2 + (b - 255) ** 2);
-          const minDist = Math.min(distBg, distWhite);
+          const distBgSq = (r - bgR) ** 2 + (g - bgG) ** 2 + (b - bgB) ** 2;
+          const distWhiteSq = (r - 255) ** 2 + (g - 255) ** 2 + (b - 255) ** 2;
+          const minDistSq = Math.min(distBgSq, distWhiteSq);
 
-          if (minDist < 36) {
+          if (minDistSq < THRESHOLD_TRANSPARENT_SQ) {
             d[i + 3] = 0; // 100% Transparent
-          } else if (minDist < 62) {
-            // Smooth edge anti-aliasing
+          } else if (minDistSq < THRESHOLD_SMOOTH_SQ) {
+            const minDist = Math.sqrt(minDistSq);
             const alpha = (minDist - 36) / 26;
             d[i + 3] = Math.round(d[i + 3] * alpha);
           }
         }
 
         ctx.putImageData(imgData, 0, 0);
-        setDataUrl(canvas.toDataURL('image/png'));
+        const resultUrl = canvas.toDataURL('image/png');
+        imageCache.set(src, resultUrl);
+        setDataUrl(resultUrl);
       } catch {
         setDataUrl(src);
       }
@@ -74,9 +85,9 @@ function TransparentServiceImage({
 
   return (
     <img
-      src={dataUrl || src}
+      src={dataUrl || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='}
       alt={alt}
-      className={className}
+      className={`${className} ${dataUrl ? 'opacity-100' : 'opacity-0'} transition-opacity duration-200`}
       onError={(e) => {
         e.currentTarget.style.display = 'none';
       }}
@@ -87,41 +98,49 @@ function TransparentServiceImage({
 const services = [
   { 
     title: 'Housemaid & Maid',
+    categorySlug: 'maid',
     imgSrc: '/services/maid.jpg',
     gradient: 'from-rose-400 to-pink-500',
   },
   { 
     title: 'Home Cook & Chef',
+    categorySlug: 'home-cook',
     imgSrc: '/services/cook.jpg',
     gradient: 'from-orange-400 to-red-500',
   },
   { 
     title: '20L Water Supply',
+    categorySlug: 'water-supply',
     imgSrc: '/services/water.jpg',
     gradient: 'from-sky-400 to-blue-600',
   },
   { 
     title: 'Wash & Steam Iron',
+    categorySlug: 'laundry',
     imgSrc: '/services/laundry.jpg',
     gradient: 'from-violet-400 to-purple-600',
   },
   { 
     title: 'Plumbing & Repairs',
+    categorySlug: 'plumber',
     imgSrc: '/services/plumber.jpg',
     gradient: 'from-slate-400 to-slate-600',
   },
   { 
     title: 'Wiring & Electrical',
+    categorySlug: 'electrician',
     imgSrc: '/services/electrician.jpg',
     gradient: 'from-amber-400 to-orange-500',
   },
   { 
     title: 'AC Deep Service',
+    categorySlug: 'ac-repair',
     imgSrc: '/services/ac.jpg',
     gradient: 'from-cyan-400 to-teal-500',
   },
   { 
     title: 'LPG Gas Supply',
+    categorySlug: 'gas-delivery',
     imgSrc: '/services/gas.jpg',
     gradient: 'from-rose-500 to-red-600',
   },
@@ -141,7 +160,7 @@ export function PopularServices() {
               Popular Home & Life Services
             </h2>
           </div>
-          <a href="/services" className="text-sm font-bold text-[#0033CC] hover:underline hidden md:block">
+          <a href="/listings" className="text-sm font-bold text-[#0033CC] hover:underline hidden md:block">
             See all →
           </a>
         </div>
@@ -151,7 +170,7 @@ export function PopularServices() {
           {services.map((service, index) => (
             <a
               key={index}
-              href={`/service/${service.title.toLowerCase().replace(/ & /g, '-').replace(/ /g, '-')}`}
+              href={`/listings?category=${service.categorySlug}`}
               className={`group relative flex flex-col items-center justify-end bg-gradient-to-br ${service.gradient} rounded-2xl md:rounded-3xl overflow-hidden hover:-translate-y-2 hover:shadow-2xl transition-all duration-300 cursor-pointer h-[155px] md:h-[180px] border-4 border-white/20 hover:border-white/40 shadow-lg`}
             >
               {/* Centered Transparent 3D Character */}
@@ -174,7 +193,7 @@ export function PopularServices() {
         </div>
 
         {/* Mobile View All */}
-        <a href="/services" className="mt-6 flex md:hidden items-center justify-center gap-1.5 text-sm font-bold text-[#0033CC] bg-white border border-gray-200 py-3 rounded-2xl active:scale-95 transition-transform shadow-sm">
+        <a href="/listings" className="mt-6 flex md:hidden items-center justify-center gap-1.5 text-sm font-bold text-[#0033CC] bg-white border border-gray-200 py-3 rounded-2xl active:scale-95 transition-transform shadow-sm">
           Explore All Services →
         </a>
 

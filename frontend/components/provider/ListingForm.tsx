@@ -38,8 +38,8 @@ const formSchema = z.object({
   closingTime: z.string().optional(),
   totalRooms: z.coerce.number().int().min(1).max(500).optional(),
   
-  photos: z.array(z.string()).default([]),
-  amenities: z.array(z.string()).default([]),
+  photos: z.array(z.string()),
+  amenities: z.array(z.string()),
   
   contactPhone: z.string().min(10, 'Valid 10-digit calling number required').max(15),
   contactWhatsApp: z.string().min(10, 'Valid 10-digit WhatsApp number required').max(15),
@@ -74,7 +74,7 @@ export function ListingForm({ categorySlug }: { categorySlug: string }) {
   const isOther = categorySlug === 'other-service';
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema) as any,
     defaultValues: {
       categorySlug,
       title: '',

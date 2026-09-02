@@ -27,7 +27,7 @@ export class LocationController {
     } catch (error) {
       if (error instanceof z.ZodError) {
         return NextResponse.json(
-          { success: false, error: { code: 'VALIDATION_ERROR', message: error.errors[0].message } },
+          { success: false, error: { code: 'VALIDATION_ERROR', message: error.issues[0]?.message || 'Invalid search query' } },
           { status: 400 }
         );
       }

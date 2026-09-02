@@ -36,6 +36,22 @@ export const apiClient = {
     return json.data;
   },
 
+  async getWithMeta<T = unknown>(url: string): Promise<ApiSuccessResponse<T>> {
+    const res = await fetch(url, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    const json = (await res.json()) as ApiResponse<T>;
+    
+    if (!json.success) {
+      throw new Error(json.error?.message || 'An error occurred during the request.');
+    }
+    
+    return json;
+  },
+
   async post<T = unknown>(url: string, body?: unknown): Promise<T> {
     const res = await fetch(url, {
       method: 'POST',

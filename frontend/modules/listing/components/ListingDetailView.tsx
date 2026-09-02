@@ -131,6 +131,81 @@ const CoupleSafeGuaranteeCard = React.memo(function CoupleSafeGuaranteeCard() {
   );
 });
 
+const PropertySafeGuaranteeCard = React.memo(function PropertySafeGuaranteeCard({ isPG }: { isPG?: boolean }) {
+  return (
+    <div className="bg-[#F8FAFD] rounded-[36px] p-6 sm:p-7 border-2 border-white shadow-[0_18px_40px_rgba(30,70,120,0.12),inset_0_3px_6px_rgba(255,255,255,0.95),inset_0_-2px_4px_rgba(0,30,80,0.03)] space-y-5 transform-gpu">
+      {/* Top Header */}
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#E2E8F0] pb-4">
+        <div className="flex items-center gap-3.5">
+          <div className="w-14 h-14 rounded-[22px] bg-white border-2 border-white shadow-[0_8px_20px_rgba(0,51,204,0.12),inset_0_2px_4px_rgba(255,255,255,0.95)] flex items-center justify-center text-[#0033CC] shrink-0">
+            <Building className="w-6 h-6 text-[#0033CC]" />
+          </div>
+          <div>
+            <h2 className="text-lg sm:text-xl font-extrabold text-[#0f172a] tracking-tight">
+              SearchBook Verified Living Space
+            </h2>
+            <p className="text-xs font-semibold text-gray-500 mt-0.5">
+              100% Direct Owner, Zero Brokerage & Verified Accommodation
+            </p>
+          </div>
+        </div>
+
+        <span className="inline-flex items-center gap-2 text-xs font-black text-[#2F6B4F] bg-[#E3ECE6] border-2 border-white px-5 py-2.5 rounded-full shadow-2xs">
+          <ShieldCheck className="w-4 h-4 text-[#2F6B4F]" />
+          100% Verified Property
+        </span>
+      </div>
+
+      {/* 4 True 3D Claymorphic Pill Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {/* Card 1 */}
+        <div className="px-5 py-4.5 rounded-[28px] bg-[#EAF3FD] border-2 border-white shadow-[0_10px_25px_rgba(0,51,204,0.14),inset_0_3px_5px_rgba(255,255,255,0.9),inset_0_-3px_5px_rgba(0,51,204,0.06)] flex items-center gap-4 hover:scale-[1.01] transition-transform">
+          <div className="w-14 h-14 rounded-[20px] bg-gradient-to-br from-[#0033CC] to-[#2563EB] text-white shadow-[0_12px_24px_rgba(0,51,204,0.42),inset_0_3px_4px_rgba(255,255,255,0.45),inset_0_-3px_4px_rgba(0,0,0,0.2)] flex items-center justify-center shrink-0">
+            <Shield className="w-6 h-6 fill-white text-white" />
+          </div>
+          <div className="min-w-0">
+            <strong className="text-sm font-extrabold text-[#0B1E3B] block leading-snug">Zero Brokerage Fee</strong>
+            <p className="text-xs font-medium text-[#1853A3] mt-0.5 leading-snug">Connect directly with the verified property owner.</p>
+          </div>
+        </div>
+
+        {/* Card 2 */}
+        <div className="px-5 py-4.5 rounded-[28px] bg-[#E3ECE6] border-2 border-white shadow-[0_10px_25px_rgba(47,107,79,0.12),inset_0_3px_5px_rgba(255,255,255,0.9),inset_0_-3px_5px_rgba(47,107,79,0.06)] flex items-center gap-4 hover:scale-[1.01] transition-transform">
+          <div className="w-14 h-14 rounded-[20px] bg-gradient-to-br from-[#2F6B4F] to-[#1E4D37] text-white shadow-[0_12px_24px_rgba(47,107,79,0.42),inset_0_3px_4px_rgba(255,255,255,0.45),inset_0_-3px_4px_rgba(0,0,0,0.2)] flex items-center justify-center shrink-0">
+            <CheckCircle2 className="w-6 h-6 text-white" />
+          </div>
+          <div className="min-w-0">
+            <strong className="text-sm font-extrabold text-[#112E20] block leading-snug">Direct Site Visit</strong>
+            <p className="text-xs font-medium text-[#255C42] mt-0.5 leading-snug">Schedule a free in-person physical inspection.</p>
+          </div>
+        </div>
+
+        {/* Card 3 */}
+        <div className="px-5 py-4.5 rounded-[28px] bg-[#FEF5E3] border-2 border-white shadow-[0_10px_25px_rgba(217,119,6,0.12),inset_0_3px_5px_rgba(255,255,255,0.9),inset_0_-3px_5px_rgba(217,119,6,0.06)] flex items-center gap-4 hover:scale-[1.01] transition-transform">
+          <div className="w-14 h-14 rounded-[20px] bg-gradient-to-br from-[#F59E0B] to-[#C96700] text-white shadow-[0_12px_24px_rgba(217,119,6,0.42),inset_0_3px_4px_rgba(255,255,255,0.45),inset_0_-3px_4px_rgba(0,0,0,0.2)] flex items-center justify-center shrink-0">
+            <KeyRound className="w-6 h-6 text-white stroke-[2.5]" />
+          </div>
+          <div className="min-w-0">
+            <strong className="text-sm font-extrabold text-[#381D02] block leading-snug">Standard Agreement</strong>
+            <p className="text-xs font-medium text-[#8C4604] mt-0.5 leading-snug">Transparent security deposit & rental terms.</p>
+          </div>
+        </div>
+
+        {/* Card 4 */}
+        <div className="px-5 py-4.5 rounded-[28px] bg-[#F3EEFA] border-2 border-white shadow-[0_10px_25px_rgba(139,44,226,0.12),inset_0_3px_5px_rgba(255,255,255,0.9),inset_0_-3px_5px_rgba(139,44,226,0.06)] flex items-center gap-4 hover:scale-[1.01] transition-transform">
+          <div className="w-14 h-14 rounded-[20px] bg-gradient-to-br from-[#9D44F8] to-[#7916E8] text-white shadow-[0_12px_24px_rgba(139,44,226,0.42),inset_0_3px_4px_rgba(255,255,255,0.45),inset_0_-3px_4px_rgba(0,0,0,0.2)] flex items-center justify-center shrink-0">
+            <Sparkles className="w-6 h-6 fill-white text-white" />
+          </div>
+          <div className="min-w-0">
+            <strong className="text-sm font-extrabold text-[#1F1138] block leading-snug">Ready To Move</strong>
+            <p className="text-xs font-medium text-[#6B2FB8] mt-0.5 leading-snug">{isPG ? 'Fully furnished with meals & WiFi.' : 'Verified electricity, water supply & fittings.'}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+});
+
 interface ListingDetailViewProps {
   listing: ListingDetailData;
 }
@@ -158,7 +233,10 @@ export function ListingDetailView({ listing }: ListingDetailViewProps) {
     ? listing.photos
     : ['https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1200&q=80'];
 
-  const isHotel = listing.category.slug === 'hourly-hotels' || listing.category.slug === 'hotels';
+  const categorySlug = listing.category?.slug?.toLowerCase() || '';
+  const isHotel = categorySlug === 'hourly-hotels' || categorySlug === 'hotels';
+  const isFlat = categorySlug === 'flats' || categorySlug === 'flat' || categorySlug === 'house' || categorySlug === 'apartments';
+  const isPG = categorySlug === 'pg-hostel' || categorySlug === 'pg' || categorySlug === 'hostel';
   const baseHourlyPrice = listing.price && Number(listing.price) <= 950 ? 199 : Math.max(199, Math.round((Number(listing.price || 899) * 0.23) / 10) * 10 - 1);
   const base24hPrice = Number(listing.price) || 899;
 
@@ -328,29 +406,33 @@ export function ListingDetailView({ listing }: ListingDetailViewProps) {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
             
             {/* ── LEFT COLUMN (DETAILS & HIGHLIGHTS) ── */}
-            <div className="lg:col-span-2 space-y-7 transform-gpu">
+            <div className="lg:col-span-2 space-y-7">
               
-              {/* 1. SEARCHBOOK COUPLE SAFE & PRIVACY GUARANTEE (MEMOIZED 3D CLAY) */}
-              <CoupleSafeGuaranteeCard />
+              {/* 1. GUARANTEE CARD */}
+              {isHotel ? (
+                <CoupleSafeGuaranteeCard />
+              ) : (
+                <PropertySafeGuaranteeCard isPG={isPG} />
+              )}
 
-              {/* 2. PROPERTY / ROOM SPECIFICATIONS (4 UNIFIED MINIMAL CLAY CARDS) */}
+              {/* 2. PROPERTY / ROOM SPECIFICATIONS */}
               <div className="bg-[#F8FAFD] rounded-[36px] p-6 sm:p-7 border-2 border-white shadow-[0_18px_40px_rgba(30,70,120,0.12),inset_0_3px_6px_rgba(255,255,255,0.95)] space-y-5">
                 <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-4">
                   <div>
                     <h3 className="text-base sm:text-lg font-black text-[#0f172a]">
-                      {isHotel ? 'Room Setup & Specifications' : 'Property Specifications'}
+                      {isHotel ? 'Room Setup & Specifications' : isFlat ? 'Flat Specifications' : isPG ? 'PG & Hostel Setup' : 'Specifications'}
                     </h3>
-                    <p className="text-xs text-gray-500 font-medium mt-0.5">Verified details & accommodation amenities</p>
+                    <p className="text-xs text-gray-500 font-medium mt-0.5">Verified property details & amenities</p>
                   </div>
                   <span className="text-xs font-black text-[#2F6B4F] bg-[#E3ECE6] px-3.5 py-1.5 rounded-full border border-[#C5DDD0] shadow-2xs">
-                    ● Active Stay
+                    ● Active Listing
                   </span>
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
                   {isHotel ? (
                     <>
-                      {/* Bed Setup (3D Clay Card) */}
+                      {/* Bed Setup */}
                       <div className="p-4 rounded-[26px] bg-[#F0F5FB] border-2 border-white shadow-[0_10px_22px_rgba(30,70,120,0.1),inset_0_3px_5px_rgba(255,255,255,0.95),inset_0_-2px_4px_rgba(0,30,80,0.03)] flex flex-col justify-between min-h-[140px] hover:scale-[1.02] transition-transform">
                         <div className="w-12 h-12 rounded-[18px] bg-gradient-to-br from-[#0033CC] to-[#2563EB] text-white shadow-[0_8px_18px_rgba(0,51,204,0.32),inset_0_2px_3px_rgba(255,255,255,0.45),inset_0_-2px_3px_rgba(0,0,0,0.2)] flex items-center justify-center mb-2">
                           <Bed className="w-6 h-6 fill-white text-white" />
@@ -364,7 +446,7 @@ export function ListingDetailView({ listing }: ListingDetailViewProps) {
                         </div>
                       </div>
 
-                      {/* Room Type (3D Clay Card) */}
+                      {/* Room Type */}
                       <div className="p-4 rounded-[26px] bg-[#F0F5FB] border-2 border-white shadow-[0_10px_22px_rgba(30,70,120,0.1),inset_0_3px_5px_rgba(255,255,255,0.95),inset_0_-2px_4px_rgba(0,30,80,0.03)] flex flex-col justify-between min-h-[140px] hover:scale-[1.02] transition-transform">
                         <div className="w-12 h-12 rounded-[18px] bg-gradient-to-br from-[#0033CC] to-[#2563EB] text-white shadow-[0_8px_18px_rgba(0,51,204,0.32),inset_0_2px_3px_rgba(255,255,255,0.45),inset_0_-2px_3px_rgba(0,0,0,0.2)] flex items-center justify-center mb-2">
                           <Building className="w-6 h-6 text-white" />
@@ -378,7 +460,7 @@ export function ListingDetailView({ listing }: ListingDetailViewProps) {
                         </div>
                       </div>
 
-                      {/* Occupancy (3D Clay Card) */}
+                      {/* Occupancy */}
                       <div className="p-4 rounded-[26px] bg-[#F0F5FB] border-2 border-white shadow-[0_10px_22px_rgba(30,70,120,0.1),inset_0_3px_5px_rgba(255,255,255,0.95),inset_0_-2px_4px_rgba(0,30,80,0.03)] flex flex-col justify-between min-h-[140px] hover:scale-[1.02] transition-transform">
                         <div className="w-12 h-12 rounded-[18px] bg-gradient-to-br from-[#0033CC] to-[#2563EB] text-white shadow-[0_8px_18px_rgba(0,51,204,0.32),inset_0_2px_3px_rgba(255,255,255,0.45),inset_0_-2px_3px_rgba(0,0,0,0.2)] flex items-center justify-center mb-2">
                           <User className="w-6 h-6 fill-white text-white" />
@@ -392,7 +474,7 @@ export function ListingDetailView({ listing }: ListingDetailViewProps) {
                         </div>
                       </div>
 
-                      {/* Timing (3D Clay Card) */}
+                      {/* Timing */}
                       <div className="p-4 rounded-[26px] bg-[#F0F5FB] border-2 border-white shadow-[0_10px_22px_rgba(30,70,120,0.1),inset_0_3px_5px_rgba(255,255,255,0.95),inset_0_-2px_4px_rgba(0,30,80,0.03)] flex flex-col justify-between min-h-[140px] hover:scale-[1.02] transition-transform">
                         <div className="w-12 h-12 rounded-[18px] bg-gradient-to-br from-[#0033CC] to-[#2563EB] text-white shadow-[0_8px_18px_rgba(0,51,204,0.32),inset_0_2px_3px_rgba(255,255,255,0.45),inset_0_-2px_3px_rgba(0,0,0,0.2)] flex items-center justify-center mb-2">
                           <Clock className="w-6 h-6 text-white" />
@@ -408,42 +490,79 @@ export function ListingDetailView({ listing }: ListingDetailViewProps) {
                     </>
                   ) : (
                     <>
-                      {listing.bhkType && (
-                        <div className="p-4 rounded-[26px] bg-[#F0F5FB] border-2 border-white text-center shadow-xs">
-                          <Building className="w-6 h-6 text-[#0033CC] mx-auto mb-1.5" />
-                          <span className="text-[10px] text-gray-400 block uppercase font-bold">Config</span>
-                          <span className="text-xs font-black text-[#0f172a]">{listing.bhkType.replace(/_/g, ' ')}</span>
+                      {/* BHK / Room Config */}
+                      <div className="p-4 rounded-[26px] bg-[#F0F5FB] border-2 border-white shadow-[0_10px_22px_rgba(30,70,120,0.1),inset_0_3px_5px_rgba(255,255,255,0.95),inset_0_-2px_4px_rgba(0,30,80,0.03)] flex flex-col justify-between min-h-[140px] hover:scale-[1.02] transition-transform">
+                        <div className="w-12 h-12 rounded-[18px] bg-gradient-to-br from-[#0033CC] to-[#2563EB] text-white shadow-[0_8px_18px_rgba(0,51,204,0.32),inset_0_2px_3px_rgba(255,255,255,0.45),inset_0_-2px_3px_rgba(0,0,0,0.2)] flex items-center justify-center mb-2">
+                          <Building className="w-6 h-6 text-white" />
                         </div>
-                      )}
-                      {listing.furnishing && (
-                        <div className="p-4 rounded-[26px] bg-[#F0F5FB] border-2 border-white text-center shadow-xs">
-                          <Bed className="w-6 h-6 text-[#0033CC] mx-auto mb-1.5" />
-                          <span className="text-[10px] text-gray-400 block uppercase font-bold">Furnishing</span>
-                          <span className="text-xs font-black text-[#0f172a] capitalize">{listing.furnishing.replace(/_/g, ' ').toLowerCase()}</span>
+                        <div>
+                          <span className="text-[10px] text-[#2B6CB0] block uppercase font-black tracking-wider">Config</span>
+                          <strong className="text-xs sm:text-sm font-black text-[#0B1E3B] block truncate">
+                            {listing.bhkType ? listing.bhkType.replace(/_/g, ' ') : isFlat ? '1-2 BHK' : isPG ? 'Sharing Rooms' : 'Residential'}
+                          </strong>
+                          <span className="text-[10px] font-bold text-[#1853A3] block mt-0.5">Spacious</span>
                         </div>
-                      )}
-                      {listing.tenantType && (
-                        <div className="p-4 rounded-[26px] bg-[#F0F5FB] border-2 border-white text-center shadow-xs">
-                          <User className="w-6 h-6 text-[#0033CC] mx-auto mb-1.5" />
-                          <span className="text-[10px] text-gray-400 block uppercase font-bold">Preferred</span>
-                          <span className="text-xs font-black text-[#0f172a] capitalize">{listing.tenantType.replace(/_/g, ' ').toLowerCase()}</span>
+                      </div>
+
+                      {/* Furnishing */}
+                      <div className="p-4 rounded-[26px] bg-[#F0F5FB] border-2 border-white shadow-[0_10px_22px_rgba(30,70,120,0.1),inset_0_3px_5px_rgba(255,255,255,0.95),inset_0_-2px_4px_rgba(0,30,80,0.03)] flex flex-col justify-between min-h-[140px] hover:scale-[1.02] transition-transform">
+                        <div className="w-12 h-12 rounded-[18px] bg-gradient-to-br from-[#0033CC] to-[#2563EB] text-white shadow-[0_8px_18px_rgba(0,51,204,0.32),inset_0_2px_3px_rgba(255,255,255,0.45),inset_0_-2px_3px_rgba(0,0,0,0.2)] flex items-center justify-center mb-2">
+                          <Bed className="w-6 h-6 fill-white text-white" />
                         </div>
-                      )}
-                      <div className="p-4 rounded-[26px] bg-[#F0F5FB] border-2 border-white text-center shadow-xs">
-                        <Clock className="w-6 h-6 text-[#0033CC] mx-auto mb-1.5" />
-                        <span className="text-[10px] text-gray-400 block uppercase font-bold">Hours</span>
-                        <span className="text-xs font-black text-[#0f172a]">{listing.openingTime ? `${listing.openingTime} - ${listing.closingTime}` : 'All Day'}</span>
+                        <div>
+                          <span className="text-[10px] text-[#2B6CB0] block uppercase font-black tracking-wider">Furnishing</span>
+                          <strong className="text-xs sm:text-sm font-black text-[#0B1E3B] block truncate capitalize">
+                            {listing.furnishing ? listing.furnishing.replace(/_/g, ' ').toLowerCase() : 'Semi-Furnished'}
+                          </strong>
+                          <span className="text-[10px] font-bold text-[#1853A3] block mt-0.5">Ready to Move</span>
+                        </div>
+                      </div>
+
+                      {/* Suitable / Available For */}
+                      <div className="p-4 rounded-[26px] bg-[#F0F5FB] border-2 border-white shadow-[0_10px_22px_rgba(30,70,120,0.1),inset_0_3px_5px_rgba(255,255,255,0.95),inset_0_-2px_4px_rgba(0,30,80,0.03)] flex flex-col justify-between min-h-[140px] hover:scale-[1.02] transition-transform">
+                        <div className="w-12 h-12 rounded-[18px] bg-gradient-to-br from-[#0033CC] to-[#2563EB] text-white shadow-[0_8px_18px_rgba(0,51,204,0.32),inset_0_2px_3px_rgba(255,255,255,0.45),inset_0_-2px_3px_rgba(0,0,0,0.2)] flex items-center justify-center mb-2">
+                          <User className="w-6 h-6 fill-white text-white" />
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-[#2B6CB0] block uppercase font-black tracking-wider">Available For</span>
+                          <strong className="text-xs sm:text-sm font-black text-[#0B1E3B] block truncate capitalize">
+                            {listing.tenantType ? listing.tenantType.replace(/_/g, ' ').toLowerCase() : 'All Welcome'}
+                          </strong>
+                          <span className="text-[10px] font-bold text-[#1853A3] block mt-0.5">Direct Owner</span>
+                        </div>
+                      </div>
+
+                      {/* Zero Brokerage (Replaces irrelevant opening/closing hours for flats) */}
+                      <div className="p-4 rounded-[26px] bg-[#F0F5FB] border-2 border-white shadow-[0_10px_22px_rgba(30,70,120,0.1),inset_0_3px_5px_rgba(255,255,255,0.95),inset_0_-2px_4px_rgba(0,30,80,0.03)] flex flex-col justify-between min-h-[140px] hover:scale-[1.02] transition-transform">
+                        <div className="w-12 h-12 rounded-[18px] bg-gradient-to-br from-[#2F6B4F] to-[#1E4D37] text-white shadow-[0_8px_18px_rgba(47,107,79,0.32),inset_0_2px_3px_rgba(255,255,255,0.45),inset_0_-2px_3px_rgba(0,0,0,0.2)] flex items-center justify-center mb-2">
+                          <ShieldCheck className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-[#2F6B4F] block uppercase font-black tracking-wider">Brokerage</span>
+                          <strong className="text-xs sm:text-sm font-black text-[#0B1E3B] block truncate">
+                            ₹0 (Zero Fee)
+                          </strong>
+                          <span className="text-[10px] font-bold text-[#2F6B4F] block mt-0.5">100% Direct Deal</span>
+                        </div>
                       </div>
                     </>
                   )}
                 </div>
               </div>
 
-              {/* 3. ABOUT THE PROPERTY / DESCRIPTION (3D CLAY TABLET) */}
+              {/* 3. ABOUT THE PROPERTY / DESCRIPTION */}
               <div className="bg-[#F8FAFD] rounded-[36px] p-6 sm:p-7 border-2 border-white shadow-[0_18px_40px_rgba(30,70,120,0.12),inset_0_3px_6px_rgba(255,255,255,0.95)] space-y-4">
-                <h3 className="text-base sm:text-lg font-black text-[#0f172a]">About this Hotel Stay</h3>
+                <h3 className="text-base sm:text-lg font-black text-[#0f172a]">
+                  About this {isHotel ? 'Hotel Stay' : isFlat ? 'Flat & Residence' : isPG ? 'PG & Hostel' : (listing.category?.name || 'Property')}
+                </h3>
                 {(() => {
-                  const desc = listing.description || `${listing.title} is a premium, couple-friendly hotel located in the heart of ${listing.city.name}. Designed for travellers and couples seeking short micro-stays, day stays, or full 24-hour comfortable accommodation with sanitized rooms, high-speed WiFi, and 24/7 front desk assistance.`;
+                  const desc = listing.description || (
+                    isHotel
+                      ? `${listing.title} is a premium, couple-friendly hotel located in the heart of ${listing.city.name}. Designed for travellers and couples seeking short micro-stays, day stays, or full 24-hour comfortable accommodation with sanitized rooms, high-speed WiFi, and 24/7 front desk assistance.`
+                      : isPG
+                      ? `${listing.title} is a verified PG & hostel accommodation located in ${listing.address}, ${listing.city.name}. Offering comfortable student and bachelor accommodation with clean rooms, essential amenities, and direct owner management.`
+                      : `${listing.title} is a verified residential rental property located at ${listing.address}, ${listing.city.name}. Connect directly with the verified owner with zero brokerage and explore transparent terms.`
+                  );
                   const isLong = desc.length > 220;
                   const displayDesc = (!isDescriptionExpanded && isLong) ? `${desc.slice(0, 220)}...` : desc;
 
@@ -466,25 +585,30 @@ export function ListingDetailView({ listing }: ListingDetailViewProps) {
                 })()}
               </div>
 
-              {/* 4. AVAILABLE AMENITIES GRID (3D CLAY TABLET) */}
+              {/* 4. AVAILABLE AMENITIES GRID */}
               <div className="bg-[#F8FAFD] rounded-[36px] p-6 sm:p-7 border-2 border-white shadow-[0_18px_40px_rgba(30,70,120,0.12),inset_0_3px_6px_rgba(255,255,255,0.95)] space-y-5">
                 <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-4">
                   <div>
                     <h3 className="text-base sm:text-lg font-black text-[#0f172a]">Available Amenities</h3>
-                    <p className="text-xs text-gray-500 font-medium mt-0.5">Complimentary services & room features</p>
+                    <p className="text-xs text-gray-500 font-medium mt-0.5">Complimentary features & fittings</p>
                   </div>
                   <span className="text-xs font-bold text-gray-500">
-                    {((listing.amenities && listing.amenities.length > 0) ? listing.amenities.length : 9)} Features Included
+                    {((listing.amenities && listing.amenities.length > 0) ? listing.amenities.length : 6)} Features Included
                   </span>
                 </div>
 
                 {(() => {
                   const allAmenities = (listing.amenities && listing.amenities.length > 0)
                     ? listing.amenities
-                    : [
+                    : isHotel
+                    ? [
                         'Free High-Speed WiFi', 'Air Conditioning', 'Flat-screen Smart TV',
                         'Attached Private Bathroom', '24/7 Hot Water / Geyser', 'Power Backup',
                         'Daily Housekeeping', 'Free Parking Space', '24/7 Room Service'
+                      ]
+                    : [
+                        '24/7 Water Supply', 'Electricity & Power Backup', 'Dedicated Parking Space',
+                        'Gated Security & CCTV', 'Attached Washroom', 'Modular Kitchen Fittings'
                       ];
                   const displayedAmenities = showAllAmenities ? allAmenities : allAmenities.slice(0, 9);
                   const remainingCount = allAmenities.length - 9;
@@ -505,7 +629,6 @@ export function ListingDetailView({ listing }: ListingDetailViewProps) {
                         ))}
                       </div>
 
-                      {/* See More Button when amenities > 9 */}
                       {allAmenities.length > 9 && (
                         <button
                           type="button"
@@ -524,32 +647,57 @@ export function ListingDetailView({ listing }: ListingDetailViewProps) {
                 })()}
               </div>
 
-              {/* 5. HOTEL POLICIES & HOUSE RULES (3D CLAY TABLET) */}
+              {/* 5. POLICIES & GUIDELINES */}
               <div className="bg-[#F8FAFD] rounded-[36px] p-6 sm:p-7 border-2 border-white shadow-[0_18px_40px_rgba(30,70,120,0.12),inset_0_3px_6px_rgba(255,255,255,0.95)] space-y-4">
-                <h3 className="text-base sm:text-lg font-black text-[#0f172a]">Stay Policies & Guidelines</h3>
-                <ul className="space-y-3 text-xs text-gray-700">
-                  <li className="flex items-start gap-3.5 p-4 rounded-[24px] bg-[#EAF3FD] border-2 border-white shadow-2xs">
-                    <div className="w-9 h-9 rounded-2xl bg-[#0033CC] text-white shadow-[0_4px_10px_rgba(0,51,204,0.3)] flex items-center justify-center shrink-0">
-                      <CheckCircle2 className="w-4 h-4" />
-                    </div>
-                    <span className="mt-1 font-medium"><strong>Check-in Requirement:</strong> Valid 18+ Govt ID (Aadhaar Card, Driving License, Voter ID or Passport) is required for all adult guests.</span>
-                  </li>
-                  <li className="flex items-start gap-3.5 p-4 rounded-[24px] bg-[#F3EEFA] border-2 border-white shadow-2xs">
-                    <div className="w-9 h-9 rounded-2xl bg-[#9D44F8] text-white shadow-[0_4px_10px_rgba(157,68,248,0.3)] flex items-center justify-center shrink-0">
-                      <CheckCircle2 className="w-4 h-4" />
-                    </div>
-                    <span className="mt-1 font-medium"><strong>Couples Policy:</strong> Unmarried and married couples are warmly welcome. Local city IDs are accepted with zero discrimination.</span>
-                  </li>
-                  <li className="flex items-start gap-3.5 p-4 rounded-[24px] bg-[#FEF5E3] border-2 border-white shadow-2xs">
-                    <div className="w-9 h-9 rounded-2xl bg-[#F59E0B] text-white shadow-[0_4px_10px_rgba(245,158,11,0.3)] flex items-center justify-center shrink-0">
-                      <CheckCircle2 className="w-4 h-4" />
-                    </div>
-                    <span className="mt-1 font-medium"><strong>Payment Policy:</strong> Pay on arrival at hotel reception desk. No advance payment required on SearchBook.</span>
-                  </li>
-                </ul>
+                <h3 className="text-base sm:text-lg font-black text-[#0f172a]">
+                  {isHotel ? 'Stay Policies & Guidelines' : 'Rental Guidelines & Terms'}
+                </h3>
+                {isHotel ? (
+                  <ul className="space-y-3 text-xs text-gray-700">
+                    <li className="flex items-start gap-3.5 p-4 rounded-[24px] bg-[#EAF3FD] border-2 border-white shadow-2xs">
+                      <div className="w-9 h-9 rounded-2xl bg-[#0033CC] text-white shadow-[0_4px_10px_rgba(0,51,204,0.3)] flex items-center justify-center shrink-0">
+                        <CheckCircle2 className="w-4 h-4" />
+                      </div>
+                      <span className="mt-1 font-medium"><strong>Check-in Requirement:</strong> Valid 18+ Govt ID (Aadhaar Card, Driving License, Voter ID or Passport) is required for all adult guests.</span>
+                    </li>
+                    <li className="flex items-start gap-3.5 p-4 rounded-[24px] bg-[#F3EEFA] border-2 border-white shadow-2xs">
+                      <div className="w-9 h-9 rounded-2xl bg-[#9D44F8] text-white shadow-[0_4px_10px_rgba(157,68,248,0.3)] flex items-center justify-center shrink-0">
+                        <CheckCircle2 className="w-4 h-4" />
+                      </div>
+                      <span className="mt-1 font-medium"><strong>Couples Policy:</strong> Unmarried and married couples are warmly welcome. Local city IDs are accepted with zero discrimination.</span>
+                    </li>
+                    <li className="flex items-start gap-3.5 p-4 rounded-[24px] bg-[#FEF5E3] border-2 border-white shadow-2xs">
+                      <div className="w-9 h-9 rounded-2xl bg-[#F59E0B] text-white shadow-[0_4px_10px_rgba(245,158,11,0.3)] flex items-center justify-center shrink-0">
+                        <CheckCircle2 className="w-4 h-4" />
+                      </div>
+                      <span className="mt-1 font-medium"><strong>Payment Policy:</strong> Pay on arrival at hotel reception desk. No advance payment required on SearchBook.</span>
+                    </li>
+                  </ul>
+                ) : (
+                  <ul className="space-y-3 text-xs text-gray-700">
+                    <li className="flex items-start gap-3.5 p-4 rounded-[24px] bg-[#EAF3FD] border-2 border-white shadow-2xs">
+                      <div className="w-9 h-9 rounded-2xl bg-[#0033CC] text-white shadow-[0_4px_10px_rgba(0,51,204,0.3)] flex items-center justify-center shrink-0">
+                        <CheckCircle2 className="w-4 h-4" />
+                      </div>
+                      <span className="mt-1 font-medium"><strong>Direct Owner Connect:</strong> 100% Zero brokerage. Deal directly with the verified property owner for site visits and negotiations.</span>
+                    </li>
+                    <li className="flex items-start gap-3.5 p-4 rounded-[24px] bg-[#E3ECE6] border-2 border-white shadow-2xs">
+                      <div className="w-9 h-9 rounded-2xl bg-[#2F6B4F] text-white shadow-[0_4px_10px_rgba(47,107,79,0.3)] flex items-center justify-center shrink-0">
+                        <CheckCircle2 className="w-4 h-4" />
+                      </div>
+                      <span className="mt-1 font-medium"><strong>Tenant KYC:</strong> Valid Govt ID (Aadhaar / Voter ID / Employment ID) required for standard rental agreement.</span>
+                    </li>
+                    <li className="flex items-start gap-3.5 p-4 rounded-[24px] bg-[#FEF5E3] border-2 border-white shadow-2xs">
+                      <div className="w-9 h-9 rounded-2xl bg-[#F59E0B] text-white shadow-[0_4px_10px_rgba(245,158,11,0.3)] flex items-center justify-center shrink-0">
+                        <CheckCircle2 className="w-4 h-4" />
+                      </div>
+                      <span className="mt-1 font-medium"><strong>Deposit & Advance Terms:</strong> 100% transparent security deposit as agreed mutually between tenant and owner.</span>
+                    </li>
+                  </ul>
+                )}
               </div>
 
-              {/* 6. LOCATION & INTERACTIVE GOOGLE MAP (3D CLAY TABLET) */}
+              {/* 6. LOCATION & INTERACTIVE GOOGLE MAP */}
               <div className="bg-[#F8FAFD] rounded-[36px] p-6 sm:p-7 border-2 border-white shadow-[0_18px_40px_rgba(30,70,120,0.12),inset_0_3px_6px_rgba(255,255,255,0.95)] space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -567,7 +715,6 @@ export function ListingDetailView({ listing }: ListingDetailViewProps) {
                   </a>
                 </div>
 
-                {/* Live Interactive Google Map Frame with 3D Rounded Edge */}
                 <div className="relative w-full h-64 sm:h-72 rounded-[28px] overflow-hidden border-2 border-white shadow-md bg-gray-100 transform-gpu contain-paint">
                   <iframe
                     title={`${listing.title} Google Map Location`}
@@ -577,7 +724,6 @@ export function ListingDetailView({ listing }: ListingDetailViewProps) {
                     allowFullScreen
                   />
                   
-                  {/* Floating Quick Pin Card */}
                   <div className="absolute bottom-3.5 left-3.5 bg-white/95 backdrop-blur-md px-4 py-2.5 rounded-2xl shadow-lg border border-white text-xs flex items-center gap-2.5 max-w-[85%]">
                     <MapPin className="w-4 h-4 text-rose-600 shrink-0 animate-bounce" />
                     <div className="min-w-0">
@@ -588,13 +734,13 @@ export function ListingDetailView({ listing }: ListingDetailViewProps) {
                 </div>
               </div>
 
-              {/* 7. VERIFIED GUEST REVIEWS (3D CLAY TABLET) */}
+              {/* 7. VERIFIED GUEST REVIEWS */}
               <div className="bg-[#F8FAFD] rounded-[36px] p-6 sm:p-7 border-2 border-white shadow-[0_18px_40px_rgba(30,70,120,0.12),inset_0_3px_6px_rgba(255,255,255,0.95)] space-y-5">
                 <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-4">
                   <div>
-                    <h3 className="text-base sm:text-lg font-black text-[#0f172a]">Guest Reviews & Ratings</h3>
+                    <h3 className="text-base sm:text-lg font-black text-[#0f172a]">User Reviews & Ratings</h3>
                     <p className="text-[11px] text-gray-500 mt-0.5 font-medium">
-                      {totalReviews > 0 ? `${totalReviews} verified guest reviews` : 'Recent guest feedback'}
+                      {totalReviews > 0 ? `${totalReviews} verified reviews` : 'Recent user feedback'}
                     </p>
                   </div>
                   <span className="text-xs font-black text-[#0f172a] flex items-center gap-1.5 bg-[#FEF5E3] border border-[#FDE5C3] px-4 py-1.5 rounded-full shadow-2xs">
@@ -611,7 +757,7 @@ export function ListingDetailView({ listing }: ListingDetailViewProps) {
                           <div className="w-8 h-8 rounded-[12px] bg-gradient-to-br from-[#0033CC] to-[#2563EB] text-white shadow-[0_4px_10px_rgba(0,51,204,0.3)] flex items-center justify-center font-black text-[11px]">
                             {rev.user?.name?.[0] || 'G'}
                           </div>
-                          <span className="font-black text-gray-900">{rev.user?.name || 'Verified Guest'}</span>
+                          <span className="font-black text-gray-900">{rev.user?.name || 'Verified User'}</span>
                         </div>
                         <div className="flex items-center gap-0.5 text-amber-500">
                           {Array.from({ length: rev.rating || 5 }).map((_, rIdx) => (
@@ -624,7 +770,6 @@ export function ListingDetailView({ listing }: ListingDetailViewProps) {
                   ))}
                 </div>
 
-                {/* Pagination Controls (When reviews > 6) */}
                 {totalReviews > 6 && (
                   <div className="flex items-center justify-between pt-3.5 border-t border-[#E2E8F0] text-xs">
                     <button
@@ -654,137 +799,223 @@ export function ListingDetailView({ listing }: ListingDetailViewProps) {
             </div>
 
             {/* ── RIGHT COLUMN (STICKY BOOKING WIDGET - 3D CLAY TABLET) ── */}
-            <div className="lg:col-span-1 self-start">
-              <div className="sticky top-20 space-y-4 transform-gpu will-change-transform">
+            <div className="lg:col-span-1 lg:sticky lg:top-20 z-30 space-y-4 self-start">
+              <div className="bg-[#F8FAFD] rounded-[32px] p-5 sm:p-6 border-2 border-white shadow-[0_18px_40px_rgba(30,70,120,0.12),inset_0_2px_4px_rgba(255,255,255,0.95)] space-y-4">
                 
-                {/* Main 3D Clay Booking Card */}
-                <div className="bg-[#F8FAFD] rounded-[32px] p-5 sm:p-6 border-2 border-white shadow-[0_18px_40px_rgba(30,70,120,0.12),inset_0_2px_4px_rgba(255,255,255,0.95)] space-y-4 transform-gpu">
-                  {/* Premium Royal Sapphire Blue 3D Starting Price Box */}
-                  <div className="relative overflow-hidden bg-gradient-to-br from-[#002B99] via-[#0033CC] to-[#1D4ED8] p-4.5 rounded-[24px] border-2 border-white shadow-[0_12px_28px_rgba(0,51,204,0.35),inset_0_2px_4px_rgba(255,255,255,0.4)] text-white">
-                    {/* Ambient Glow Accent */}
-                    <div className="absolute -top-8 -right-8 w-24 h-24 bg-white/20 rounded-full blur-xl pointer-events-none" />
+                {isHotel ? (
+                  <>
+                    {/* Hotel Starting Price Box */}
+                    <div className="relative overflow-hidden bg-gradient-to-br from-[#002B99] via-[#0033CC] to-[#1D4ED8] p-4.5 rounded-[24px] border-2 border-white shadow-[0_12px_28px_rgba(0,51,204,0.35),inset_0_2px_4px_rgba(255,255,255,0.4)] text-white">
+                      <div className="absolute -top-8 -right-8 w-24 h-24 bg-white/20 rounded-full blur-xl pointer-events-none" />
 
-                    <div className="flex items-center justify-between relative z-10">
-                      <div className="flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-[#CCFF00] animate-pulse" />
-                        <span className="text-[10px] text-white/85 font-black uppercase tracking-wider">Starting Price</span>
-                      </div>
-                      <span className="text-[10px] font-black text-black bg-[#CCFF00] px-2.5 py-0.5 rounded-full shadow-xs">
-                        Pay at Hotel
-                      </span>
-                    </div>
-
-                    <div className="flex items-baseline gap-1.5 mt-1 relative z-10">
-                      <span className="text-3xl sm:text-4xl font-black text-white tracking-tight">
-                        ₹{baseHourlyPrice}
-                      </span>
-                      <span className="text-xs text-white/85 font-bold">
-                        / 2 Hours Micro-Stay
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Available Stay Packages Breakdown (Including 6 Hours & 24 Hours) */}
-                  <div className="space-y-1.5">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[11px] font-black text-[#0f172a] uppercase tracking-wider block">
-                        Stay Duration Packages
-                      </span>
-                      <span className="text-[10px] font-bold text-gray-500">5 Options Available</span>
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-2">
-                      {/* 2 Hours */}
-                      <div className="p-2.5 bg-[#EAF3FD] border-2 border-white rounded-[18px] shadow-2xs text-center">
-                        <span className="text-[9px] text-[#0033CC] block font-black uppercase">2 Hours</span>
-                        <span className="text-xs font-black text-[#0B1E3B] block mt-0.5">₹{baseHourlyPrice}</span>
-                        <span className="text-[8px] text-gray-500 font-medium block">Micro-Stay</span>
-                      </div>
-
-                      {/* 3 Hours */}
-                      <div className="p-2.5 bg-[#F3EEFA] border-2 border-white rounded-[18px] shadow-2xs text-center">
-                        <span className="text-[9px] text-[#9D44F8] block font-black uppercase">3 Hours</span>
-                        <span className="text-xs font-black text-[#1F1138] block mt-0.5">₹{Math.round(baseHourlyPrice * 1.5)}</span>
-                        <span className="text-[8px] text-purple-700 font-bold block">Popular</span>
-                      </div>
-
-                      {/* 6 Hours */}
-                      <div className="p-2.5 bg-[#FEF5E3] border-2 border-white rounded-[18px] shadow-2xs text-center">
-                        <span className="text-[9px] text-[#D97706] block font-black uppercase">6 Hours</span>
-                        <span className="text-xs font-black text-[#381D02] block mt-0.5">₹{Math.max(499, Math.round(baseHourlyPrice * 2.3))}</span>
-                        <span className="text-[8px] text-amber-800 font-medium block">Half Day</span>
-                      </div>
-
-                      {/* Day Pass (9-6) */}
-                      <div className="p-2.5 bg-[#FEF2D6] border-2 border-white rounded-[18px] shadow-2xs text-center">
-                        <span className="text-[9px] text-[#DDA15E] block font-black uppercase">Day Pass</span>
-                        <span className="text-xs font-black text-[#422B0C] block mt-0.5">₹599</span>
-                        <span className="text-[8px] text-gray-500 font-medium block">9 AM–6 PM</span>
-                      </div>
-
-                      {/* Full 24 Hours Stay (SPANS 2 COLS FOR PROMINENCE & FLEXIBILITY) */}
-                      <div className="col-span-2 p-2.5 bg-[#E3ECE6] border-2 border-white rounded-[18px] shadow-2xs flex items-center justify-between px-3.5">
-                        <div>
-                          <div className="flex items-center gap-1.5">
-                            <span className="text-[9px] text-[#2F6B4F] font-black uppercase">Full 24h Stay</span>
-                            <span className="text-[8px] font-black text-[#2F6B4F] bg-white px-1.5 py-0.2 rounded border border-[#C5DDD0]">Flexible</span>
-                          </div>
-                          <span className="text-[9px] text-[#2F6B4F] font-bold block">24h from check-in time</span>
+                      <div className="flex items-center justify-between relative z-10">
+                        <div className="flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full bg-[#CCFF00] animate-pulse" />
+                          <span className="text-[10px] text-white/85 font-black uppercase tracking-wider">Starting Price</span>
                         </div>
-                        <span className="text-sm font-black text-[#1E3A2B]">₹{base24hPrice}</span>
+                        <span className="text-[10px] font-black text-black bg-[#CCFF00] px-2.5 py-0.5 rounded-full shadow-xs">
+                          Pay at Hotel
+                        </span>
+                      </div>
+
+                      <div className="flex items-baseline gap-1.5 mt-1 relative z-10">
+                        <span className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+                          ₹{baseHourlyPrice}
+                        </span>
+                        <span className="text-xs text-white/85 font-bold">
+                          / 2 Hours Micro-Stay
+                        </span>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Primary CTA: SearchBook Royal Electric Blue 3D Button */}
-                  <button
-                    type="button"
-                    onClick={() => setIsBookingModalOpen(true)}
-                    className="w-full bg-gradient-to-r from-[#0033CC] via-[#1A56DB] to-[#2563EB] hover:from-[#0029A3] hover:to-[#1D4ED8] text-white font-black text-xs sm:text-sm py-3.5 rounded-[20px] transition-all flex items-center justify-center gap-2 cursor-pointer shadow-[0_12px_26px_rgba(0,51,204,0.38),inset_0_2px_4px_rgba(255,255,255,0.35)] hover:scale-[1.02] active:scale-[0.98]"
-                  >
-                    <span>Book Hourly / Daily Stay</span>
-                    <ArrowRight className="w-4 h-4 text-white stroke-[2.5]" />
-                  </button>
+                    {/* Stay Duration Packages Breakdown */}
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[11px] font-black text-[#0f172a] uppercase tracking-wider block">
+                          Stay Duration Packages
+                        </span>
+                        <span className="text-[10px] font-bold text-gray-500">5 Options Available</span>
+                      </div>
 
-                  {/* Direct Contacts */}
-                  <div className="grid grid-cols-2 gap-2 pt-1 border-t border-[#E2E8F0]">
-                    <a
-                      href={`tel:${listing.contactPhone}`}
-                      className="px-3 py-2.5 text-xs font-black text-gray-800 bg-white hover:bg-gray-50 border-2 border-white shadow-2xs rounded-[18px] flex items-center justify-center gap-1.5 transition-all hover:scale-105"
+                      <div className="grid grid-cols-3 gap-2">
+                        {/* 2 Hours */}
+                        <div className="p-2.5 bg-[#EAF3FD] border-2 border-white rounded-[18px] shadow-2xs text-center">
+                          <span className="text-[9px] text-[#0033CC] block font-black uppercase">2 Hours</span>
+                          <span className="text-xs font-black text-[#0B1E3B] block mt-0.5">₹{baseHourlyPrice}</span>
+                          <span className="text-[8px] text-gray-500 font-medium block">Micro-Stay</span>
+                        </div>
+
+                        {/* 3 Hours */}
+                        <div className="p-2.5 bg-[#F3EEFA] border-2 border-white rounded-[18px] shadow-2xs text-center">
+                          <span className="text-[9px] text-[#9D44F8] block font-black uppercase">3 Hours</span>
+                          <span className="text-xs font-black text-[#1F1138] block mt-0.5">₹{Math.round(baseHourlyPrice * 1.5)}</span>
+                          <span className="text-[8px] text-purple-700 font-bold block">Popular</span>
+                        </div>
+
+                        {/* 6 Hours */}
+                        <div className="p-2.5 bg-[#FEF5E3] border-2 border-white rounded-[18px] shadow-2xs text-center">
+                          <span className="text-[9px] text-[#D97706] block font-black uppercase">6 Hours</span>
+                          <span className="text-xs font-black text-[#381D02] block mt-0.5">₹{Math.max(499, Math.round(baseHourlyPrice * 2.3))}</span>
+                          <span className="text-[8px] text-amber-800 font-medium block">Half Day</span>
+                        </div>
+
+                        {/* Day Pass */}
+                        <div className="p-2.5 bg-[#FEF2D6] border-2 border-white rounded-[18px] shadow-2xs text-center">
+                          <span className="text-[9px] text-[#DDA15E] block font-black uppercase">Day Pass</span>
+                          <span className="text-xs font-black text-[#422B0C] block mt-0.5">₹599</span>
+                          <span className="text-[8px] text-gray-500 font-medium block">9 AM–6 PM</span>
+                        </div>
+
+                        {/* Full 24 Hours Stay */}
+                        <div className="col-span-2 p-2.5 bg-[#E3ECE6] border-2 border-white rounded-[18px] shadow-2xs flex items-center justify-between px-3.5">
+                          <div>
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-[9px] text-[#2F6B4F] font-black uppercase">Full 24h Stay</span>
+                              <span className="text-[8px] font-black text-[#2F6B4F] bg-white px-1.5 py-0.2 rounded border border-[#C5DDD0]">Flexible</span>
+                            </div>
+                            <span className="text-[9px] text-[#2F6B4F] font-bold block">24h from check-in</span>
+                          </div>
+                          <span className="text-sm font-black text-[#1E3A2B]">₹{base24hPrice}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Primary CTA: Book Hourly */}
+                    <button
+                      type="button"
+                      onClick={() => setIsBookingModalOpen(true)}
+                      className="w-full bg-gradient-to-r from-[#0033CC] via-[#1A56DB] to-[#2563EB] hover:from-[#0029A3] hover:to-[#1D4ED8] text-white font-black text-xs sm:text-sm py-3.5 rounded-[20px] transition-all flex items-center justify-center gap-2 cursor-pointer shadow-[0_12px_26px_rgba(0,51,204,0.38),inset_0_2px_4px_rgba(255,255,255,0.35)] hover:scale-[1.02] active:scale-[0.98]"
                     >
-                      <Phone className="w-3.5 h-3.5 text-gray-700" />
-                      Call Hotel
-                    </a>
+                      <span>Book Hourly / Daily Stay</span>
+                      <ArrowRight className="w-4 h-4 text-white stroke-[2.5]" />
+                    </button>
 
-                    <a
-                      href={`https://wa.me/91${(listing.contactWhatsApp || listing.contactPhone).replace(/\D/g, '')}?text=Hi,%20I%20am%20interested%20in%20booking%20a%20stay%20at%20${encodeURIComponent(listing.title)}%20via%20SearchBook`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="px-3 py-2.5 text-xs font-black text-[#2F6B4F] bg-[#E3ECE6] hover:bg-[#D5E4DA] border-2 border-white shadow-2xs rounded-[18px] flex items-center justify-center gap-1.5 transition-all hover:scale-105"
-                    >
-                      <MessageCircle className="w-3.5 h-3.5 text-[#2F6B4F]" />
-                      WhatsApp
-                    </a>
+                    {/* Direct Contact: Call Reception Only */}
+                    <div className="pt-1 border-t border-[#E2E8F0]">
+                      <a
+                        href={`tel:${listing.contactPhone}`}
+                        className="w-full px-4 py-3 text-xs font-black text-gray-800 bg-white hover:bg-gray-50 border-2 border-white shadow-2xs rounded-[18px] flex items-center justify-center gap-2 transition-all hover:scale-[1.01]"
+                      >
+                        <Phone className="w-3.5 h-3.5 text-gray-700" />
+                        <span>Call Hotel Reception</span>
+                      </a>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {/* Flat & PG Price Box (Optional Money Supported!) */}
+                    {listing.price && Number(listing.price) > 0 ? (
+                      <div className="relative overflow-hidden bg-gradient-to-br from-[#002B99] via-[#0033CC] to-[#1D4ED8] p-4.5 rounded-[24px] border-2 border-white shadow-[0_12px_28px_rgba(0,51,204,0.35),inset_0_2px_4px_rgba(255,255,255,0.4)] text-white">
+                        <div className="absolute -top-8 -right-8 w-24 h-24 bg-white/20 rounded-full blur-xl pointer-events-none" />
+
+                        <div className="flex items-center justify-between relative z-10">
+                          <div className="flex items-center gap-1.5">
+                            <span className="w-2 h-2 rounded-full bg-[#CCFF00] animate-pulse" />
+                            <span className="text-[10px] text-white/85 font-black uppercase tracking-wider">
+                              {listing.priceType === 'PER_MONTH' ? 'Monthly Rent' : 'Expected Rent'}
+                            </span>
+                          </div>
+                          <span className="text-[10px] font-black text-black bg-[#CCFF00] px-2.5 py-0.5 rounded-full shadow-xs">
+                            Zero Brokerage
+                          </span>
+                        </div>
+
+                        <div className="flex items-baseline gap-1.5 mt-1 relative z-10">
+                          <span className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+                            ₹{Number(listing.price).toLocaleString('en-IN')}
+                          </span>
+                          <span className="text-xs text-white/85 font-bold">
+                            {listing.priceType === 'PER_MONTH' ? '/ month' : listing.priceType === 'ONE_TIME' ? 'visiting fee' : ''}
+                          </span>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="relative overflow-hidden bg-gradient-to-br from-[#0F172A] to-[#1E293B] p-4.5 rounded-[24px] border-2 border-white shadow-[0_12px_28px_rgba(15,23,42,0.35),inset_0_2px_4px_rgba(255,255,255,0.4)] text-white">
+                        <div className="flex items-center justify-between relative z-10">
+                          <span className="text-[10px] text-white/85 font-black uppercase tracking-wider">Pricing</span>
+                          <span className="text-[10px] font-black text-black bg-[#CCFF00] px-2.5 py-0.5 rounded-full shadow-xs">
+                            Direct Owner
+                          </span>
+                        </div>
+                        <div className="mt-1 relative z-10">
+                          <span className="text-2xl font-black text-white tracking-tight">
+                            Price on Request
+                          </span>
+                          <p className="text-[11px] text-gray-300 font-medium mt-0.5">
+                            Contact owner directly for rent negotiation & details
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Flat / PG Property Details Grid */}
+                    <div className="grid grid-cols-2 gap-2 pt-1">
+                      {listing.bhkType && (
+                        <div className="p-3 rounded-[18px] bg-[#EAF3FD] border-2 border-white text-center shadow-2xs">
+                          <span className="text-[9px] text-[#0033CC] font-black uppercase block">Type</span>
+                          <span className="text-xs font-black text-[#0B1E3B] block mt-0.5">{listing.bhkType.replace(/_/g, ' ')}</span>
+                        </div>
+                      )}
+                      {listing.furnishing && (
+                        <div className="p-3 rounded-[18px] bg-[#F3EEFA] border-2 border-white text-center shadow-2xs">
+                          <span className="text-[9px] text-[#9D44F8] font-black uppercase block">Furnishing</span>
+                          <span className="text-xs font-black text-[#1F1138] block mt-0.5 capitalize">{listing.furnishing.replace(/_/g, ' ').toLowerCase()}</span>
+                        </div>
+                      )}
+                      {listing.tenantType && (
+                        <div className="p-3 rounded-[18px] bg-[#FEF5E3] border-2 border-white text-center shadow-2xs">
+                          <span className="text-[9px] text-[#D97706] font-black uppercase block">Available For</span>
+                          <span className="text-xs font-black text-[#381D02] block mt-0.5 capitalize">{listing.tenantType.replace(/_/g, ' ').toLowerCase()}</span>
+                        </div>
+                      )}
+                      <div className="p-3 rounded-[18px] bg-[#E3ECE6] border-2 border-white text-center shadow-2xs">
+                        <span className="text-[9px] text-[#2F6B4F] font-black uppercase block">Brokerage</span>
+                        <span className="text-xs font-black text-[#112E20] block mt-0.5">₹0 (Zero)</span>
+                      </div>
+                    </div>
+
+                    {/* Flat / PG Direct Action Buttons (Call + WhatsApp ONLY) */}
+                    <div className="space-y-2 pt-2 border-t border-[#E2E8F0]">
+                      <a
+                        href={`https://wa.me/91${(listing.contactWhatsApp || listing.contactPhone).replace(/\D/g, '')}?text=Hi,%20I%20am%20interested%20in%20your%20property%20${encodeURIComponent(listing.title)}%20on%20SearchBook`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="w-full bg-[#25D366] hover:bg-[#20BD5A] text-white font-black text-xs sm:text-sm py-3.5 rounded-[20px] transition-all flex items-center justify-center gap-2 cursor-pointer shadow-[0_10px_24px_rgba(37,211,102,0.35)] hover:scale-[1.02] active:scale-[0.98]"
+                      >
+                        <MessageCircle className="w-4 h-4 fill-white text-[#25D366]" />
+                        <span>Chat on WhatsApp</span>
+                      </a>
+
+                      <a
+                        href={`tel:${listing.contactPhone}`}
+                        className="w-full bg-gradient-to-r from-[#0033CC] to-[#2563EB] hover:from-[#0029A3] hover:to-[#1D4ED8] text-white font-black text-xs sm:text-sm py-3.5 rounded-[20px] transition-all flex items-center justify-center gap-2 cursor-pointer shadow-[0_10px_24px_rgba(0,51,204,0.3)] hover:scale-[1.02] active:scale-[0.98]"
+                      >
+                        <Phone className="w-4 h-4" />
+                        <span>Call Property Owner</span>
+                      </a>
+                    </div>
+                  </>
+                )}
+
+                {/* Guarantee Banner */}
+                <div className="bg-[#E3ECE6] border-2 border-white rounded-[20px] p-3 flex items-center gap-2.5 text-[#1E3A2B] shadow-2xs">
+                  <ShieldCheck className="w-4 h-4 text-[#2F6B4F] shrink-0" />
+                  <span className="text-[11px] font-black leading-tight">
+                    {isHotel ? 'Zero Advance Fee · Pay directly at reception on arrival' : '100% Zero Brokerage · Direct Key Handover & Agreement'}
+                  </span>
+                </div>
+
+                {/* Host Info */}
+                <div className="bg-white rounded-[20px] p-3 border-2 border-white shadow-2xs flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-[14px] bg-gradient-to-b from-[#0033CC] to-[#2563EB] text-white flex items-center justify-center font-black text-sm shadow-[0_4px_10px_rgba(0,51,204,0.3)] shrink-0">
+                    {listing.user?.name?.[0] || 'O'}
                   </div>
-
-                  {/* Pay at Hotel Guarantee */}
-                  <div className="bg-[#E3ECE6] border-2 border-white rounded-[20px] p-3 flex items-center gap-2.5 text-[#1E3A2B] shadow-2xs">
-                    <ShieldCheck className="w-4 h-4 text-[#2F6B4F] shrink-0" />
-                    <span className="text-[11px] font-black leading-tight">
-                      Zero Advance Fee · Pay directly at reception on arrival
+                  <div className="min-w-0">
+                    <span className="text-[9px] text-gray-400 font-black uppercase tracking-wider block">
+                      {isHotel ? 'Listed By Property' : 'Listed By Owner'}
                     </span>
-                  </div>
-
-                  {/* Integrated "Listed By Property" Host Card (ALWAYS 100% VISIBLE) */}
-                  <div className="bg-white rounded-[20px] p-3 border-2 border-white shadow-2xs flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-[14px] bg-gradient-to-b from-[#0033CC] to-[#2563EB] text-white flex items-center justify-center font-black text-sm shadow-[0_4px_10px_rgba(0,51,204,0.3)] shrink-0">
-                      {listing.user?.name?.[0] || 'H'}
-                    </div>
-                    <div className="min-w-0">
-                      <span className="text-[9px] text-gray-400 font-black uppercase tracking-wider block">Listed By Property</span>
-                      <span className="text-xs font-black text-gray-900 truncate block">{listing.user?.name || 'Hotel Front Desk'}</span>
-                      <span className="text-[10px] text-[#2F6B4F] font-bold block">● Verified Property Host</span>
-                    </div>
+                    <span className="text-xs font-black text-gray-900 truncate block">{listing.user?.name || 'Verified Host'}</span>
+                    <span className="text-[10px] text-[#2F6B4F] font-bold block">● Verified Host</span>
                   </div>
                 </div>
               </div>
@@ -792,6 +1023,70 @@ export function ListingDetailView({ listing }: ListingDetailViewProps) {
           </div>
         </div>
       </main>
+
+      {/* ── MOBILE STICKY BOTTOM STARTING PRICE & CTA BAR ── */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-xl border-t border-gray-200/90 px-4 py-3 shadow-[0_-10px_30px_rgba(0,0,0,0.12)] md:hidden flex items-center justify-between gap-3">
+        {/* Left Side: Starting Price / Rent & Tag */}
+        <div className="min-w-0">
+          <div className="flex items-center gap-1.5 mb-0.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#0033CC] animate-pulse" />
+            <span className="text-[10px] font-black text-gray-500 uppercase tracking-wider">
+              {isHotel ? 'Starting From' : (listing.price && Number(listing.price) > 0) ? 'Monthly Rent' : 'Pricing'}
+            </span>
+          </div>
+          <div className="flex items-baseline gap-1">
+            <span className="text-xl font-black text-[#0f172a] tracking-tight">
+              {isHotel
+                ? `₹${baseHourlyPrice}`
+                : (listing.price && Number(listing.price) > 0)
+                ? `₹${Number(listing.price).toLocaleString('en-IN')}`
+                : 'On Request'}
+            </span>
+            <span className="text-[11px] font-bold text-gray-500">
+              {isHotel
+                ? '/ 2 Hours'
+                : (listing.price && Number(listing.price) > 0 && listing.priceType === 'PER_MONTH')
+                ? '/ mo'
+                : ''}
+            </span>
+          </div>
+          <span className="text-[9px] font-bold text-[#2F6B4F] block truncate">
+            {isHotel ? '● Pay at Desk · Free Cancel' : '● Zero Brokerage · Direct Owner'}
+          </span>
+        </div>
+
+        {/* Right Side: Action Buttons */}
+        <div className="flex items-center gap-2 shrink-0">
+          <a
+            href={`tel:${listing.contactPhone}`}
+            className="w-10 h-10 rounded-xl bg-gray-100 text-gray-700 hover:bg-gray-200 flex items-center justify-center transition-all border border-gray-200 shadow-2xs"
+            title="Call"
+          >
+            <Phone className="w-4 h-4" />
+          </a>
+
+          {isHotel ? (
+            <button
+              type="button"
+              onClick={() => setIsBookingModalOpen(true)}
+              className="bg-gradient-to-r from-[#0033CC] to-[#2563EB] text-white text-xs font-black px-4 py-2.5 rounded-xl shadow-[0_4px_14px_rgba(0,51,204,0.35)] flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all"
+            >
+              <span>Book Hourly</span>
+              <ArrowRight className="w-3.5 h-3.5 stroke-[2.5]" />
+            </button>
+          ) : (
+            <a
+              href={`https://wa.me/91${(listing.contactWhatsApp || listing.contactPhone).replace(/\D/g, '')}?text=Hi,%20I%20am%20interested%20in%20${encodeURIComponent(listing.title)}%20on%20SearchBook`}
+              target="_blank"
+              rel="noreferrer"
+              className="bg-[#25D366] text-white text-xs font-black px-4 py-2.5 rounded-xl shadow-[0_4px_14px_rgba(37,211,102,0.35)] flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all"
+            >
+              <MessageCircle className="w-3.5 h-3.5 fill-white" />
+              <span>WhatsApp</span>
+            </a>
+          )}
+        </div>
+      </div>
 
       {/* ── HOURLY BOOKING MODAL TRIGGER ── */}
       <HourlyBookingModal

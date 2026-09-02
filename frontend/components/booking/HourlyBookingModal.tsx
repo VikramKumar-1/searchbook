@@ -167,13 +167,11 @@ export function HourlyBookingModal({ isOpen, onClose, listing }: HourlyBookingMo
     return slots.length > 0 ? slots : ALL_TIME_SLOTS;
   }, [isToday, listing.openingTime, listing.closingTime]);
 
-  const [customTime, setCustomTime] = useState(() => availableTimeSlots[0] || '02:00 PM');
-
-  useEffect(() => {
-    if (!availableTimeSlots.includes(customTime)) {
-      setCustomTime(availableTimeSlots[0] || '08:00 AM');
-    }
-  }, [availableTimeSlots, customTime]);
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState<string | null>(null);
+  const customTime = selectedTimeSlot && availableTimeSlots.includes(selectedTimeSlot)
+    ? selectedTimeSlot
+    : (availableTimeSlots[0] || '02:00 PM');
+  const setCustomTime = setSelectedTimeSlot;
 
   // Lock background scroll
   useEffect(() => {

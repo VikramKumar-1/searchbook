@@ -338,12 +338,12 @@ export function ProviderDashboard() {
                         <span className="font-semibold text-gray-900 bg-gray-100 px-2 py-0.5 rounded">
                           ₹{listing.price.toLocaleString('en-IN')}{' '}
                           <span className="text-[10px] text-gray-500 font-normal">
-                            {listing.priceType === 'PER_HOUR'
-                              ? '/ hour'
-                              : listing.priceType === 'PER_MONTH'
+                            {listing.priceType === 'PER_MONTH'
                               ? '/ month'
                               : listing.priceType === 'PER_DAY'
                               ? '/ day'
+                              : listing.priceType === 'PER_MEAL'
+                              ? '/ meal'
                               : listing.priceType === 'ONE_TIME'
                               ? 'one time'
                               : ''}

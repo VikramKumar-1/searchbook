@@ -10,7 +10,7 @@ export function handleError(error: unknown): NextResponse {
       error: {
         code: 'VALIDATION_ERROR',
         message: 'Invalid input data',
-        details: error.errors.map(e => ({ field: e.path.join('.'), message: e.message })),
+        details: error.issues.map((e) => ({ field: e.path.join('.'), message: e.message })),
       },
     }, { status: 400 });
   }

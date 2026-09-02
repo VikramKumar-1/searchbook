@@ -13,11 +13,9 @@ export const reviewRepository = {
     const review = await prisma.review.create({
       data: {
         listingId: data.listingId,
-        bookingId: data.bookingId || null,
         rating: data.rating,
         comment: data.comment,
-        guestName: data.guestName || null,
-        userId: data.userId || null,
+        userId: data.userId || '',
       },
       include: {
         user: { select: { id: true, name: true, avatar: true } },
@@ -58,20 +56,20 @@ export const reviewRepository = {
 
     if (!completedBookings.length) return null;
 
-    // Find which bookings already have reviews
-    const bookingIds = completedBookings.map((b) => b.id);
+    // Find which listings by this user already have reviews
+    const listingIds = completedBookings.map((b) => b.listingId);
     const existingReviews = await prisma.review.findMany({
       where: {
-        bookingId: { in: bookingIds },
-        deletedAt: null,
+        listingId: { in: listingIds },
+        ...(userId ? { userId } : {}),
       },
-      select: { bookingId: true },
+      select: { listingId: true, userId: true, createdAt: true },
     });
 
-    const reviewedBookingIds = new Set(existingReviews.map((r) => r.bookingId));
+    const reviewedListingIds = new Set(existingReviews.map((r) => r.listingId));
 
-    // Return the first completed booking that hasn't been reviewed yet
-    const pendingBooking = completedBookings.find((b) => !reviewedBookingIds.has(b.id));
+    // Return the first completed booking for a listing that hasn't been reviewed yet
+    const pendingBooking = completedBookings.find((b) => !reviewedListingIds.has(b.listingId));
     return pendingBooking || null;
   },
 
@@ -83,7 +81,7 @@ export const reviewRepository = {
     const skip = (page - 1) * limit;
     const [reviews, total] = await Promise.all([
       prisma.review.findMany({
-        where: { listingId, deletedAt: null },
+        where: { listingId },
         include: {
           user: { select: { id: true, name: true, avatar: true } },
         },
@@ -91,7 +89,7 @@ export const reviewRepository = {
         skip,
         take: limit,
       }),
-      prisma.review.count({ where: { listingId, deletedAt: null } }),
+      prisma.review.count({ where: { listingId } }),
     ]);
 
     return {
