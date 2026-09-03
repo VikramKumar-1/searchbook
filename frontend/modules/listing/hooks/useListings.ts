@@ -101,7 +101,7 @@ export interface ListingDetailData {
     rating: number;
     comment: string | null;
     createdAt: string;
-    user: { id: string; name: string; avatar: string | null };
+    user: { id: string; name: string; avatar: string | null } | null;
   }>;
   _count: { reviews: number; bookmarks: number };
 }

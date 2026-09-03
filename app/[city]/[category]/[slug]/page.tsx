@@ -94,6 +94,7 @@ export default async function ListingPage({ params }: PageProps) {
     reviews: listing.reviews.map(r => ({
       ...r,
       createdAt: r.createdAt.toISOString(),
+      user: r.user || { id: 'guest', name: r.guestName || 'Verified Guest', avatar: null },
     })),
   };
 
