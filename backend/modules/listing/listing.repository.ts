@@ -198,11 +198,17 @@ export const listingRepository = {
   /**
    * Finds a single listing by its slug with relations and increments view count.
    */
-  async findBySlug(slug: string) {
+  async findBySlug(slugOrId: string) {
+    const clean = decodeURIComponent(slugOrId).trim();
+    
+    // 1. Fetch main listing with core relations (city, locality, category, user)
     const listing = await prisma.listing.findFirst({
       where: {
-        slug,
-        isActive: true,
+        OR: [
+          { slug: clean },
+          { slug: clean.toLowerCase() },
+          { id: clean },
+        ],
         deletedAt: null,
       },
       include: {
@@ -210,24 +216,47 @@ export const listingRepository = {
         locality: { select: { id: true, name: true, slug: true } },
         category: { select: { id: true, name: true, slug: true, icon: true } },
         user: { select: { id: true, name: true, isPremium: true, phone: true, avatar: true } },
-        reviews: {
-          where: { deletedAt: null },
-          include: { user: { select: { id: true, name: true, avatar: true } } },
-          orderBy: { createdAt: 'desc' },
-          take: 10,
-        },
-        _count: { select: { reviews: true, bookmarks: true } },
+        _count: { select: { reviews: true } },
       },
     });
 
-    if (listing) {
-      // Non-blocking viewCount increment
+    if (!listing) return null;
+
+    // 2. Fetch reviews gracefully so a reviews mismatch never crashes the listing page
+    let reviews: Array<{
+      id: string;
+      rating: number;
+      comment: string | null;
+      createdAt: Date;
+      guestName?: string | null;
+      user: { id: string; name: string; avatar: string | null } | null;
+    }> = [];
+    try {
+      reviews = await prisma.review.findMany({
+        where: { listingId: listing.id },
+        include: { user: { select: { id: true, name: true, avatar: true } } },
+        orderBy: { createdAt: 'desc' },
+        take: 10,
+      });
+    } catch {
+      reviews = [];
+    }
+
+    // 3. Safe non-blocking viewCount increment
+    try {
       prisma.listing.update({
         where: { id: listing.id },
         data: { viewCount: { increment: 1 } },
       }).catch(() => {});
-    }
+    } catch {}
 
-    return listing;
+    return {
+      ...listing,
+      reviews,
+      _count: {
+        reviews: listing._count?.reviews || reviews.length,
+        bookmarks: 0,
+      },
+    };
   },
 };

@@ -13,14 +13,20 @@ interface PageProps {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { slug } = await params;
+  const { city, slug } = await params;
+  if (city?.startsWith('.') || slug?.endsWith('.json')) {
+    return { title: 'Not Found | SearchBook' };
+  }
   try {
     const listing = await listingService.getListingBySlug(slug);
     if (!listing) return { title: 'Hotel Not Found | SearchBook' };
 
-    const title = `${listing.title} - Book Hourly & Daily Stays in ${listing.city.name} | SearchBook`;
-    const description = `${listing.title} in ${listing.address}, ${listing.city.name}. Couple friendly hotel with 100% discretion, Pay at Hotel desk, sanitized rooms, high-speed WiFi, AC. Book 2h, 3h, 6h or 24h stays on SearchBook.`;
-    const photo = listing.photos[0] || '/og-image.jpg';
+    const cityName = listing.city?.name || 'India';
+    const citySlug = listing.city?.slug || 'city';
+    const categorySlug = listing.category?.slug || 'services';
+    const title = `${listing.title} - ${cityName} | SearchBook`;
+    const description = `${listing.title} in ${listing.address}, ${cityName}. ${listing.description || 'Verified listing on SearchBook.'}`;
+    const photo = listing.photos?.[0] || '/og-image.jpg';
 
     return {
       title,
@@ -38,7 +44,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         images: [photo],
       },
       alternates: {
-        canonical: `/${listing.city.slug}/${listing.category.slug}/${listing.slug}`,
+        canonical: `/${citySlug}/${categorySlug}/${listing.slug}`,
       },
     };
   } catch {
@@ -47,30 +53,38 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function ListingPage({ params }: PageProps) {
-  const { slug } = await params;
+  const { city, slug } = await params;
+
+  if (city?.startsWith('.') || slug?.endsWith('.json')) {
+    notFound();
+  }
   
   let listing;
   try {
     listing = await listingService.getListingBySlug(slug);
-  } catch {
+  } catch (err) {
+    console.error(`[ListingPage Error] Could not load listing for slug "${slug}":`, err);
     notFound();
   }
 
   if (!listing) {
+    console.warn(`[ListingPage Warning] No listing returned for slug "${slug}"`);
     notFound();
   }
+
+  const cityName = listing.city?.name || 'India';
 
   // JSON-LD Structured Data Schema for Google Rich Snippets
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Hotel',
     name: listing.title,
-    description: listing.description || `Couple friendly hotel stay in ${listing.city.name}`,
-    image: listing.photos,
+    description: listing.description || `Verified listing in ${cityName}`,
+    image: listing.photos || [],
     address: {
       '@type': 'PostalAddress',
       streetAddress: listing.address,
-      addressLocality: listing.city.name,
+      addressLocality: cityName,
       addressCountry: 'IN',
     },
     geo: listing.latitude && listing.longitude ? {
@@ -87,15 +101,39 @@ export default async function ListingPage({ params }: PageProps) {
     },
   };
 
-  // Convert decimal/null types for client component
+  // Convert decimal/null types for client component with bulletproof defaults
   const clientListing: ListingDetailData = {
     ...listing,
     price: listing.price ? Number(listing.price) : null,
-    reviews: listing.reviews.map(r => ({
-      ...r,
-      createdAt: r.createdAt.toISOString(),
-      user: r.user || { id: 'guest', name: r.guestName || 'Verified Guest', avatar: null },
+    city: listing.city || { id: 'city', name: cityName, slug: 'city' },
+    category: listing.category || { id: 'category', name: 'Services', slug: 'services', icon: null },
+    user: listing.user || {
+      id: listing.userId || 'provider',
+      name: 'Verified Host',
+      isPremium: false,
+      phone: listing.contactPhone || null,
+      avatar: null,
+    },
+    photos: listing.photos && listing.photos.length > 0 ? listing.photos : [],
+    amenities: listing.amenities && listing.amenities.length > 0 ? listing.amenities : [],
+    viewCount: listing.viewCount ?? 0,
+    openingTime: listing.openingTime ?? null,
+    closingTime: listing.closingTime ?? null,
+    tenantType: listing.tenantType ?? null,
+    bhkType: listing.bhkType ?? null,
+    furnishing: listing.furnishing ?? null,
+    totalRooms: listing.totalRooms ?? 5,
+    reviews: (listing.reviews || []).map(r => ({
+      id: r.id,
+      rating: r.rating,
+      comment: r.comment,
+      createdAt: r.createdAt instanceof Date ? r.createdAt.toISOString() : (typeof r.createdAt === 'string' ? r.createdAt : new Date().toISOString()),
+      user: r.user || { id: 'guest', name: (r as { guestName?: string | null }).guestName || 'Verified Guest', avatar: null },
     })),
+    _count: {
+      reviews: listing._count?.reviews || (listing.reviews ? listing.reviews.length : 0),
+      bookmarks: 0,
+    },
   };
 
   return (

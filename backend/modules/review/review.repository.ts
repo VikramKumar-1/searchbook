@@ -39,7 +39,14 @@ export const reviewRepository = {
         status: 'COMPLETED',
         deletedAt: null,
       },
-      include: {
+      select: {
+        id: true,
+        bookingCode: true,
+        listingId: true,
+        guestName: true,
+        guestPhone: true,
+        checkInDate: true,
+        checkInTime: true,
         listing: {
           select: {
             id: true,

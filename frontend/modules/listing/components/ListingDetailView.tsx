@@ -3,12 +3,13 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import {
   MapPin, Star, Phone, MessageCircle, ShieldCheck, CheckCircle2,
   Wifi, Tv, Wind, Coffee, Car, Lock, Clock, Calendar,
   Share2, Heart, ChevronRight, ChevronLeft, Eye, User, Sparkles, Building,
   Check, ArrowRight, ExternalLink, Bed, KeyRound, Bath, Zap,
-  Flame, Utensils, Droplets, ArrowUpDown, Shield, X, Grid
+  Flame, Utensils, Droplets, ArrowUpDown, Shield, X, Grid, Navigation
 } from 'lucide-react';
 import { ListingDetailData } from '../hooks/useListings';
 import { HourlyBookingModal } from '@frontend/components/booking/HourlyBookingModal';
@@ -225,6 +226,30 @@ export function ListingDetailView({ listing }: ListingDetailViewProps) {
     setIsBookingModalOpen(true);
   };
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
+  const [mobilePhotoIndex, setMobilePhotoIndex] = useState(0);
+  const mobileGalleryRef = React.useRef<HTMLDivElement>(null);
+
+  const handleMobileScroll = () => {
+    if (!mobileGalleryRef.current) return;
+    const { scrollLeft, clientWidth } = mobileGalleryRef.current;
+    if (clientWidth > 0) {
+      const newIdx = Math.round(scrollLeft / clientWidth);
+      if (newIdx !== mobilePhotoIndex && newIdx >= 0 && newIdx < photos.length) {
+        setMobilePhotoIndex(newIdx);
+      }
+    }
+  };
+
+  const handleShare = () => {
+    if (typeof window !== 'undefined' && navigator.share) {
+      navigator.share({ title: listing.title, url: window.location.href }).catch(() => {});
+    } else if (typeof window !== 'undefined') {
+      navigator.clipboard.writeText(window.location.href);
+      alert('Link copied to clipboard!');
+    }
+  };
+
+  const router = useRouter();
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   const [reviewPage, setReviewPage] = useState(1);
   const [showAllAmenities, setShowAllAmenities] = useState(false);
@@ -273,9 +298,631 @@ export function ListingDetailView({ listing }: ListingDetailViewProps) {
 
   return (
     <>
-      <main className="min-h-screen bg-[#EFF4FA] pb-24">
-        {/* ── BREADCRUMBS ── */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
+      <main className="min-h-screen bg-[#EFF4FA] pb-32 md:pb-24 w-full max-w-full overflow-x-hidden">
+        {/* ═══════════════════════════════════════════════════════════════
+            📱 ULTRA-OPTIMIZED MOBILE VIEW (True Claymorphism & Glassmorphism)
+           ═══════════════════════════════════════════════════════════════ */}
+        <div className="block md:hidden space-y-3 pb-8 w-full max-w-full overflow-x-hidden">
+          {/* 1. TOP STICKY GLASS APP BAR */}
+          <div className="sticky top-0 z-30 bg-white/85 backdrop-blur-md border-b border-white/80 px-3.5 py-2.5 flex items-center justify-between shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <button
+                type="button"
+                onClick={() => {
+                  if (typeof window !== 'undefined' && window.history.length > 1) {
+                    router.back();
+                  } else {
+                    router.push('/');
+                  }
+                }}
+                className="w-9 h-9 rounded-full bg-white shadow-[0_2px_8px_rgba(0,0,0,0.06),inset_0_1px_2px_rgba(255,255,255,0.9)] border border-gray-100 flex items-center justify-center text-gray-700 active:scale-90 transition-transform shrink-0 cursor-pointer"
+                title="Go Back"
+                aria-label="Go Back"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <div className="min-w-0 flex-1">
+                <h2 className="text-xs font-black text-gray-900 truncate leading-tight">{listing.title}</h2>
+                <p className="text-[10px] text-gray-500 font-semibold truncate">{listing.city.name} · {listing.category.name}</p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={handleShare}
+              className="w-9 h-9 rounded-full bg-white shadow-[0_2px_8px_rgba(0,0,0,0.06),inset_0_1px_2px_rgba(255,255,255,0.9)] border border-gray-100 flex items-center justify-center text-gray-700 active:scale-90 transition-transform shrink-0"
+              title="Share Stay"
+            >
+              <Share2 className="w-4 h-4 text-gray-700" />
+            </button>
+          </div>
+
+          {/* 2. SWIPEABLE HERO PHOTO CAROUSEL */}
+          <div className="relative w-full aspect-[4/3] bg-gray-950 overflow-hidden select-none">
+            <div
+              ref={mobileGalleryRef}
+              onScroll={handleMobileScroll}
+              className="w-full h-full flex overflow-x-auto snap-x snap-mandatory scrollbar-hide"
+              style={{ scrollBehavior: 'smooth', WebkitOverflowScrolling: 'touch' }}
+            >
+              {photos.map((photo, idx) => (
+                <div
+                  key={idx}
+                  onClick={() => {
+                    setActivePhotoIndex(idx);
+                    setIsGalleryOpen(true);
+                  }}
+                  className="w-full h-full shrink-0 snap-center relative cursor-pointer"
+                >
+                  <img
+                    src={photo}
+                    alt={`${listing.title} photo ${idx + 1}`}
+                    className="w-full h-full object-cover"
+                    loading={idx === 0 ? 'eager' : 'lazy'}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-black/20 pointer-events-none" />
+                </div>
+              ))}
+            </div>
+
+            {/* Badges Over Image */}
+            <div className="absolute top-3 left-3 flex items-center gap-1.5 pointer-events-none">
+              <span className="bg-white/95 backdrop-blur-md text-[#0033CC] text-[10px] font-black px-2.5 py-1 rounded-full border border-white shadow-md flex items-center gap-1">
+                <Heart className="w-3 h-3 fill-[#0033CC] text-[#0033CC]" />
+                {isHotel ? '100% Couple Safe' : 'Zero Brokerage'}
+              </span>
+              {listing.isVerified && (
+                <span className="bg-emerald-600/95 backdrop-blur-md text-white text-[10px] font-black px-2.5 py-1 rounded-full shadow-md flex items-center gap-1">
+                  <ShieldCheck className="w-3 h-3 text-white" />
+                  Verified
+                </span>
+              )}
+            </div>
+
+            {/* Counter */}
+            <button
+              type="button"
+              onClick={() => {
+                setActivePhotoIndex(mobilePhotoIndex);
+                setIsGalleryOpen(true);
+              }}
+              className="absolute bottom-3 right-3 bg-black/65 backdrop-blur-md text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full border border-white/20 flex items-center gap-1.5 shadow-md active:scale-95 transition-transform"
+            >
+              <Grid className="w-3 h-3" />
+              <span>{mobilePhotoIndex + 1} / {photos.length} Photos</span>
+            </button>
+
+            {/* Active Dots */}
+            {photos.length > 1 && (
+              <div className="absolute bottom-3.5 left-1/2 -translate-x-1/2 flex items-center gap-1 pointer-events-none">
+                {photos.slice(0, Math.min(5, photos.length)).map((_, dotIdx) => (
+                  <span
+                    key={dotIdx}
+                    className={`h-1.5 rounded-full transition-all duration-300 ${
+                      mobilePhotoIndex === dotIdx ? 'w-4 bg-[#CCFF00]' : 'w-1.5 bg-white/60'
+                    }`}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* 3. TITLE & CORE INFO CLAY CARD */}
+          <div className="relative z-10 -mt-3 mx-3 rounded-[26px] p-4 bg-[#F8FAFD] border-2 border-white shadow-[0_10px_25px_rgba(30,70,120,0.08),inset_0_2px_4px_rgba(255,255,255,0.95)] space-y-2.5">
+            <div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-[10px] font-black bg-[#E1EDF6] text-[#0033CC] px-2.5 py-0.5 rounded-full border border-white shadow-2xs">
+                  {listing.category.name}
+                </span>
+                <span className="text-[10px] font-bold text-gray-500">● {listing.city.name}</span>
+              </div>
+              <h1 className="text-lg font-black text-[#0f172a] mt-1.5 leading-snug">
+                {listing.title}
+              </h1>
+              {/* Interactive 1-Tap Scroll-to-Map Pill (Claymorphic) */}
+              <button
+                type="button"
+                onClick={() => {
+                  const el = document.getElementById('mobile-map-section');
+                  if (el) {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  }
+                }}
+                className="w-full mt-2 text-left p-2.5 rounded-[18px] bg-[#EEF4FB] hover:bg-[#E4EEFA] border border-white shadow-[0_4px_12px_rgba(30,70,120,0.06),inset_0_1px_2px_rgba(255,255,255,0.9)] flex items-center justify-between gap-2 transition-all active:scale-[0.98] cursor-pointer group"
+                title="Tap to view location on map & directions"
+              >
+                <div className="flex items-center gap-2 min-w-0 flex-1">
+                  <div className="w-6 h-6 rounded-lg bg-rose-500/10 border border-rose-200/50 flex items-center justify-center shrink-0 group-hover:bg-rose-500/20 transition-colors shadow-2xs">
+                    <MapPin className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+                  </div>
+                  <span className="text-xs text-gray-700 font-bold truncate">
+                    {listing.address}, {listing.city.name}
+                  </span>
+                </div>
+                <span className="inline-flex items-center gap-1 text-[10px] font-black text-[#0033CC] bg-white/95 backdrop-blur-xs px-2.5 py-1 rounded-xl shadow-[0_2px_6px_rgba(0,51,204,0.08),inset_0_1px_1px_rgba(255,255,255,1)] border border-blue-100 shrink-0 group-hover:bg-[#0033CC] group-hover:text-white transition-all">
+                  <span>View Map</span>
+                  <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+                </span>
+              </button>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-[#E2E8F0]">
+              <span className="inline-flex items-center gap-1 text-xs font-black text-[#0f172a] bg-white px-2.5 py-1 rounded-xl border border-gray-200 shadow-2xs shrink-0">
+                <Star className="w-3.5 h-3.5 fill-[#FFB800] text-[#FFB800]" />
+                4.8
+                <span className="text-gray-400 font-normal text-[10px]">({listing._count?.reviews || 24})</span>
+              </span>
+              <span className="text-[11px] font-extrabold text-[#2F6B4F] bg-[#E3ECE6] px-2.5 py-1 rounded-xl border border-[#C5DDD0] shadow-2xs shrink-0">
+                ✓ Verified Stay
+              </span>
+              {isHotel && (
+                <span className="text-[11px] font-extrabold text-[#0033CC] bg-[#EAF3FD] px-2.5 py-1 rounded-xl border border-[#CCE1FD] shadow-2xs shrink-0 ml-auto">
+                  ⚡ Pay at Desk
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* 4. INSTANT STAY PACKAGES / PRICING */}
+          {isHotel ? (
+            <div className="mx-3 p-4 rounded-[26px] bg-gradient-to-br from-[#002B99] via-[#0033CC] to-[#1D4ED8] text-white border-2 border-white shadow-[0_12px_28px_rgba(0,51,204,0.32),inset_0_2px_4px_rgba(255,255,255,0.35)] space-y-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="text-[9px] font-black tracking-widest text-[#CCFF00] uppercase block">Micro-Stay Pricing</span>
+                  <div className="flex items-baseline gap-1 mt-0.5">
+                    <span className="text-2xl font-black text-white">₹{baseHourlyPrice}</span>
+                    <span className="text-[11px] font-bold text-white/80">/ 2 Hours Stay</span>
+                  </div>
+                </div>
+                <span className="text-[10px] font-black text-black bg-[#CCFF00] px-2.5 py-1 rounded-full shadow-xs">
+                  Pay on Arrival
+                </span>
+              </div>
+
+              {/* 4 Stay Package Slabs */}
+              <div className="grid grid-cols-4 gap-1.5 pt-2 border-t border-white/20">
+                <div onClick={handleOpenBooking} className="min-w-0 p-1.5 sm:p-2 rounded-2xl bg-white/15 backdrop-blur-xs border border-white/20 text-center active:scale-95 transition-transform cursor-pointer">
+                  <span className="text-[9px] text-white/80 font-bold block truncate">2 Hours</span>
+                  <strong className="text-xs font-black text-white block mt-0.5 truncate">₹{baseHourlyPrice}</strong>
+                </div>
+                <div onClick={handleOpenBooking} className="min-w-0 p-1.5 sm:p-2 rounded-2xl bg-white/15 backdrop-blur-xs border border-white/20 text-center active:scale-95 transition-transform cursor-pointer">
+                  <span className="text-[9px] text-white/80 font-bold block truncate">3 Hours</span>
+                  <strong className="text-xs font-black text-white block mt-0.5 truncate">₹{Math.round(baseHourlyPrice * 1.5)}</strong>
+                </div>
+                <div onClick={handleOpenBooking} className="min-w-0 p-1.5 sm:p-2 rounded-2xl bg-white/15 backdrop-blur-xs border border-white/20 text-center active:scale-95 transition-transform cursor-pointer">
+                  <span className="text-[9px] text-white/80 font-bold block truncate">6 Hours</span>
+                  <strong className="text-xs font-black text-white block mt-0.5 truncate">₹{Math.max(499, Math.round(baseHourlyPrice * 2.3))}</strong>
+                </div>
+                <div onClick={handleOpenBooking} className="min-w-0 p-1.5 sm:p-2 rounded-2xl bg-white/25 backdrop-blur-xs border border-white/40 text-center active:scale-95 transition-transform cursor-pointer">
+                  <span className="text-[9px] text-[#CCFF00] font-bold block truncate">24 Hours</span>
+                  <strong className="text-xs font-black text-white block mt-0.5 truncate">₹{base24hPrice}</strong>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleOpenBooking}
+                className="w-full py-3 bg-[#CCFF00] hover:bg-[#bbf000] text-black font-black text-xs rounded-xl shadow-md flex items-center justify-center gap-1.5 active:scale-98 transition-transform cursor-pointer"
+              >
+                <span>Select Hourly Package & Book</span>
+                <ArrowRight className="w-3.5 h-3.5 stroke-[2.5]" />
+              </button>
+            </div>
+          ) : (
+            <div className="mx-3 p-4 rounded-[26px] bg-gradient-to-br from-[#002B99] via-[#0033CC] to-[#1D4ED8] text-white border-2 border-white shadow-[0_12px_28px_rgba(0,51,204,0.32),inset_0_2px_4px_rgba(255,255,255,0.35)] space-y-2.5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="text-[9px] font-black tracking-widest text-[#CCFF00] uppercase block">Monthly Rent</span>
+                  <div className="flex items-baseline gap-1 mt-0.5">
+                    <span className="text-2xl font-black text-white">
+                      {listing.price && Number(listing.price) > 0 ? `₹${Number(listing.price).toLocaleString('en-IN')}` : 'Price on Request'}
+                    </span>
+                    {listing.price && Number(listing.price) > 0 && <span className="text-[11px] font-bold text-white/80">/ month</span>}
+                  </div>
+                </div>
+                <span className="text-[10px] font-black text-black bg-[#CCFF00] px-2.5 py-1 rounded-full shadow-xs">
+                  Zero Brokerage
+                </span>
+              </div>
+              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-white/20">
+                <a
+                  href={`https://wa.me/91${(listing.contactWhatsApp || listing.contactPhone).replace(/\D/g, '')}?text=Hi,%20I%20am%20interested%20in%20${encodeURIComponent(listing.title)}%20on%20SearchBook`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="py-2.5 px-3 bg-[#25D366] text-white font-black text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-transform"
+                >
+                  <MessageCircle className="w-3.5 h-3.5 fill-white" />
+                  <span>WhatsApp</span>
+                </a>
+                <a
+                  href={`tel:${listing.contactPhone}`}
+                  className="py-2.5 px-3 bg-white text-[#0033CC] font-black text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-transform"
+                >
+                  <Phone className="w-3.5 h-3.5" />
+                  <span>Call Owner</span>
+                </a>
+              </div>
+            </div>
+          )}
+
+          {/* 5. QUICK SPECS BENTO (2x2 Clay Grid) */}
+          <div className="mx-3 p-4 rounded-[26px] bg-[#F8FAFD] border-2 border-white shadow-[0_10px_25px_rgba(30,70,120,0.08),inset_0_2px_4px_rgba(255,255,255,0.95)] space-y-3">
+            <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-2">
+              <h3 className="text-xs font-black text-[#0f172a] uppercase tracking-wider">
+                {isHotel ? 'Room Setup' : 'Property Setup'}
+              </h3>
+              <span className="text-[10px] font-bold text-gray-500">Verified Specifications</span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 sm:gap-2.5">
+              {isHotel ? (
+                <>
+                  <div className="min-w-0 p-2.5 sm:p-3 rounded-[20px] bg-[#F0F5FB] border-2 border-white shadow-2xs flex items-center gap-2 sm:gap-2.5">
+                    <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-[14px] bg-gradient-to-br from-[#0033CC] to-[#2563EB] text-white flex items-center justify-center shrink-0 shadow-xs">
+                      <Bed className="w-4 h-4 sm:w-5 sm:h-5 fill-white text-white" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <span className="text-[9px] text-[#2B6CB0] font-black uppercase block truncate">Bed Setup</span>
+                      <strong className="text-xs font-black text-[#0B1E3B] block truncate capitalize">
+                        {listing.furnishing ? listing.furnishing.replace(/_/g, ' ').toLowerCase() : '1 King Bed'}
+                      </strong>
+                    </div>
+                  </div>
+
+                  <div className="min-w-0 p-2.5 sm:p-3 rounded-[20px] bg-[#F0F5FB] border-2 border-white shadow-2xs flex items-center gap-2 sm:gap-2.5">
+                    <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-[14px] bg-gradient-to-br from-[#0033CC] to-[#2563EB] text-white flex items-center justify-center shrink-0 shadow-xs">
+                      <Building className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <span className="text-[9px] text-[#2B6CB0] font-black uppercase block truncate">Room Type</span>
+                      <strong className="text-xs font-black text-[#0B1E3B] block truncate capitalize">
+                        {listing.tenantType ? listing.tenantType.replace(/_/g, ' ').toLowerCase() : (listing.bhkType ? listing.bhkType.replace(/_/g, ' ') : 'Deluxe AC')}
+                      </strong>
+                    </div>
+                  </div>
+
+                  <div className="min-w-0 p-2.5 sm:p-3 rounded-[20px] bg-[#F0F5FB] border-2 border-white shadow-2xs flex items-center gap-2 sm:gap-2.5">
+                    <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-[14px] bg-gradient-to-br from-[#0033CC] to-[#2563EB] text-white flex items-center justify-center shrink-0 shadow-xs">
+                      <User className="w-4 h-4 sm:w-5 sm:h-5 fill-white text-white" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <span className="text-[9px] text-[#2B6CB0] font-black uppercase block truncate">Guests</span>
+                      <strong className="text-xs font-black text-[#0B1E3B] block truncate">
+                        Max 2-3 Guests
+                      </strong>
+                    </div>
+                  </div>
+
+                  <div className="min-w-0 p-2.5 sm:p-3 rounded-[20px] bg-[#F0F5FB] border-2 border-white shadow-2xs flex items-center gap-2 sm:gap-2.5">
+                    <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-[14px] bg-gradient-to-br from-[#0033CC] to-[#2563EB] text-white flex items-center justify-center shrink-0 shadow-xs">
+                      <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <span className="text-[9px] text-[#2B6CB0] font-black uppercase block truncate">Check-in</span>
+                      <strong className="text-xs font-black text-[#0B1E3B] block truncate">
+                        {listing.openingTime && listing.closingTime ? `${listing.openingTime} - ${listing.closingTime}` : '24/7 Check-in'}
+                      </strong>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="min-w-0 p-2.5 sm:p-3 rounded-[20px] bg-[#F0F5FB] border-2 border-white shadow-2xs flex items-center gap-2 sm:gap-2.5">
+                    <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-[14px] bg-gradient-to-br from-[#0033CC] to-[#2563EB] text-white flex items-center justify-center shrink-0 shadow-xs">
+                      <Building className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <span className="text-[9px] text-[#2B6CB0] font-black uppercase block truncate">Config</span>
+                      <strong className="text-xs font-black text-[#0B1E3B] block truncate">
+                        {listing.bhkType ? listing.bhkType.replace(/_/g, ' ') : isFlat ? '1-2 BHK' : 'Sharing'}
+                      </strong>
+                    </div>
+                  </div>
+
+                  <div className="min-w-0 p-2.5 sm:p-3 rounded-[20px] bg-[#F0F5FB] border-2 border-white shadow-2xs flex items-center gap-2 sm:gap-2.5">
+                    <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-[14px] bg-gradient-to-br from-[#0033CC] to-[#2563EB] text-white flex items-center justify-center shrink-0 shadow-xs">
+                      <Bed className="w-4 h-4 sm:w-5 sm:h-5 fill-white text-white" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <span className="text-[9px] text-[#2B6CB0] font-black uppercase block truncate">Furnishing</span>
+                      <strong className="text-xs font-black text-[#0B1E3B] block truncate capitalize">
+                        {listing.furnishing ? listing.furnishing.replace(/_/g, ' ').toLowerCase() : 'Semi-Furnished'}
+                      </strong>
+                    </div>
+                  </div>
+
+                  <div className="min-w-0 p-2.5 sm:p-3 rounded-[20px] bg-[#F0F5FB] border-2 border-white shadow-2xs flex items-center gap-2 sm:gap-2.5">
+                    <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-[14px] bg-gradient-to-br from-[#0033CC] to-[#2563EB] text-white flex items-center justify-center shrink-0 shadow-xs">
+                      <User className="w-4 h-4 sm:w-5 sm:h-5 fill-white text-white" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <span className="text-[9px] text-[#2B6CB0] font-black uppercase block truncate">Available For</span>
+                      <strong className="text-xs font-black text-[#0B1E3B] block truncate capitalize">
+                        {listing.tenantType ? listing.tenantType.replace(/_/g, ' ').toLowerCase() : 'All Welcome'}
+                      </strong>
+                    </div>
+                  </div>
+
+                  <div className="min-w-0 p-2.5 sm:p-3 rounded-[20px] bg-[#E3ECE6] border-2 border-white shadow-2xs flex items-center gap-2 sm:gap-2.5">
+                    <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-[14px] bg-gradient-to-br from-[#2F6B4F] to-[#1E4D37] text-white flex items-center justify-center shrink-0 shadow-xs">
+                      <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <span className="text-[9px] text-[#2F6B4F] font-black uppercase block truncate">Brokerage</span>
+                      <strong className="text-xs font-black text-[#112E20] block truncate">
+                        ₹0 (Zero Fee)
+                      </strong>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* 6. SEARCHBOOK GUARANTEE (Compact Mobile Clay Card) */}
+          <div className="mx-3 p-4 rounded-[26px] bg-[#F8FAFD] border-2 border-white shadow-[0_10px_25px_rgba(30,70,120,0.08),inset_0_2px_4px_rgba(255,255,255,0.95)] space-y-2.5">
+            <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-2">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#9D44F8] to-[#7916E8] text-white flex items-center justify-center shadow-xs">
+                  <Heart className="w-4 h-4 fill-white text-white" />
+                </div>
+                <div>
+                  <h3 className="text-xs font-black text-[#0f172a]">
+                    {isHotel ? 'Couple Safe Guarantee' : 'SearchBook Direct Deal'}
+                  </h3>
+                  <p className="text-[10px] text-gray-500 font-semibold">100% Verified & Discreet</p>
+                </div>
+              </div>
+              <span className="text-[10px] font-black text-[#2F6B4F] bg-[#E3ECE6] px-2.5 py-0.5 rounded-full border border-[#C5DDD0]">
+                Verified
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2">
+              <div className="min-w-0 p-2.5 rounded-[18px] bg-[#F3EEFA] border-2 border-white flex items-center gap-2">
+                <div className="w-7 h-7 rounded-lg bg-[#9D44F8] text-white flex items-center justify-center shrink-0 shadow-2xs">
+                  <Heart className="w-3.5 h-3.5 fill-white" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <strong className="text-[11px] font-extrabold text-[#1F1138] block leading-tight truncate">Couples Welcome</strong>
+                  <span className="text-[9px] text-[#6B2FB8] block leading-tight truncate">Zero moral policing</span>
+                </div>
+              </div>
+
+              <div className="min-w-0 p-2.5 rounded-[18px] bg-[#FDEBE8] border-2 border-white flex items-center gap-2">
+                <div className="w-7 h-7 rounded-lg bg-[#F03048] text-white flex items-center justify-center shrink-0 shadow-2xs">
+                  <ShieldCheck className="w-3.5 h-3.5 text-white" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <strong className="text-[11px] font-extrabold text-[#380E14] block leading-tight truncate">Local IDs OK</strong>
+                  <span className="text-[9px] text-[#A81E30] block leading-tight truncate">All 18+ Govt IDs</span>
+                </div>
+              </div>
+
+              <div className="min-w-0 p-2.5 rounded-[18px] bg-[#EAF3FD] border-2 border-white flex items-center gap-2">
+                <div className="w-7 h-7 rounded-lg bg-[#0033CC] text-white flex items-center justify-center shrink-0 shadow-2xs">
+                  <Lock className="w-3.5 h-3.5 text-white" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <strong className="text-[11px] font-extrabold text-[#0B1E3B] block leading-tight truncate">100% Privacy</strong>
+                  <span className="text-[9px] text-[#1853A3] block leading-tight truncate">Discreet check-in</span>
+                </div>
+              </div>
+
+              <div className="min-w-0 p-2.5 rounded-[18px] bg-[#E3ECE6] border-2 border-white flex items-center gap-2">
+                <div className="w-7 h-7 rounded-lg bg-[#2F6B4F] text-white flex items-center justify-center shrink-0 shadow-2xs">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-white" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <strong className="text-[11px] font-extrabold text-[#112E20] block leading-tight truncate">Pay on Arrival</strong>
+                  <span className="text-[9px] text-[#255C42] block leading-tight truncate">Zero advance fee</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 7. ABOUT PROPERTY */}
+          <div className="mx-3 p-4 rounded-[26px] bg-[#F8FAFD] border-2 border-white shadow-[0_10px_25px_rgba(30,70,120,0.08),inset_0_2px_4px_rgba(255,255,255,0.95)] space-y-2.5">
+            <h3 className="text-xs font-black text-[#0f172a] uppercase tracking-wider">
+              About this Stay
+            </h3>
+            {(() => {
+              const desc = listing.description || (
+                isHotel
+                  ? `${listing.title} is a premium couple-friendly hotel located in ${listing.city.name}. Designed for travellers and couples seeking short micro-stays, day stays, or full 24-hour comfortable accommodation.`
+                  : `${listing.title} is a verified property located at ${listing.address}, ${listing.city.name}. Connect directly with the verified owner with zero brokerage.`
+              );
+              const isLong = desc.length > 180;
+              const displayDesc = (!isDescriptionExpanded && isLong) ? `${desc.slice(0, 180)}...` : desc;
+
+              return (
+                <div className="space-y-2">
+                  <p className="text-xs text-gray-700 leading-relaxed font-normal whitespace-pre-line">
+                    {displayDesc}
+                  </p>
+                  {isLong && (
+                    <button
+                      type="button"
+                      onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+                      className="text-xs font-black text-[#0033CC] hover:underline cursor-pointer"
+                    >
+                      {isDescriptionExpanded ? 'Show Less ↑' : 'Read More →'}
+                    </button>
+                  )}
+                </div>
+              );
+            })()}
+          </div>
+
+          {/* 8. AMENITIES CHIPS */}
+          <div className="mx-3 p-4 rounded-[26px] bg-[#F8FAFD] border-2 border-white shadow-[0_10px_25px_rgba(30,70,120,0.08),inset_0_2px_4px_rgba(255,255,255,0.95)] space-y-3">
+            <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-2">
+              <h3 className="text-xs font-black text-[#0f172a] uppercase tracking-wider">
+                Amenities & Facilities
+              </h3>
+              <span className="text-[10px] font-bold text-gray-500">
+                {(listing.amenities?.length || 6)} Included
+              </span>
+            </div>
+
+            {(() => {
+              const allAmenities = (listing.amenities && listing.amenities.length > 0)
+                ? listing.amenities
+                : isHotel
+                ? ['Free High-Speed WiFi', 'Air Conditioning (AC)', 'Smart TV', 'Private Bathroom', '24/7 Hot Water Geyser', 'Power Backup', 'Daily Housekeeping', 'Free Parking']
+                : ['24/7 Water Supply', 'Power Backup', 'Dedicated Parking', 'Gated Security & CCTV', 'Attached Washroom'];
+              const displayed = showAllAmenities ? allAmenities : allAmenities.slice(0, 6);
+
+              return (
+                <div className="space-y-3">
+                  <div className="grid grid-cols-2 gap-2">
+                    {displayed.map((amenity, i) => (
+                      <div
+                        key={i}
+                        className="min-w-0 flex items-center gap-2 p-2.5 bg-white rounded-[18px] border border-gray-100 text-[11px] font-bold text-gray-800 shadow-2xs"
+                      >
+                        <div className="w-7 h-7 rounded-lg bg-[#EAF3FD] flex items-center justify-center shrink-0">
+                          {getAmenityIcon(amenity)}
+                        </div>
+                        <span className="truncate flex-1 min-w-0">{amenity}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {allAmenities.length > 6 && (
+                    <button
+                      type="button"
+                      onClick={() => setShowAllAmenities(!showAllAmenities)}
+                      className="w-full py-2.5 text-xs font-black text-[#0033CC] bg-white border border-blue-100 rounded-[18px] shadow-2xs active:scale-98 transition-transform"
+                    >
+                      {showAllAmenities ? 'Show Less Amenities' : `View All (${allAmenities.length}) Amenities →`}
+                    </button>
+                  )}
+                </div>
+              );
+            })()}
+          </div>
+
+          {/* 9. LOCATION & MAP */}
+          <div
+            id="mobile-map-section"
+            className="mx-3 p-4 rounded-[26px] bg-[#F8FAFD] border-2 border-white shadow-[0_10px_25px_rgba(30,70,120,0.08),inset_0_2px_4px_rgba(255,255,255,0.95)] space-y-3.5 scroll-mt-20"
+          >
+            {/* Header with Title, Category, and Verified Address */}
+            <div className="flex items-start justify-between gap-3 border-b border-[#E2E8F0] pb-3">
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-[#0033CC] bg-[#EAF3FD] px-2.5 py-0.5 rounded-full border border-blue-100">
+                    Location & Directions
+                  </span>
+                  <span className="text-[10px] font-bold text-gray-500">● {listing.city.name}</span>
+                </div>
+                <h3 className="text-sm font-black text-[#0f172a] mt-1.5 truncate">
+                  {listing.title}
+                </h3>
+                <p className="text-[11px] text-gray-600 font-medium leading-relaxed mt-0.5 break-words">
+                  {listing.address}, {listing.city.name}
+                </p>
+              </div>
+            </div>
+
+            {/* Interactive Map with Overlay Pin Badge */}
+            <div className="relative w-full h-48 rounded-[22px] overflow-hidden border-2 border-white shadow-sm bg-gray-100 transform-gpu contain-paint">
+              <iframe
+                title={`${listing.title} Map`}
+                src={`https://maps.google.com/maps?q=${listing.latitude && listing.longitude ? `${listing.latitude},${listing.longitude}` : encodeURIComponent(`${listing.title}, ${listing.address}, ${listing.city.name}`)}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
+                className="w-full h-full border-0"
+                loading="lazy"
+              />
+              <div className="absolute bottom-2.5 left-2.5 right-2.5 bg-white/95 backdrop-blur-md p-2.5 rounded-xl border border-white shadow-md flex items-center justify-between gap-2 pointer-events-none">
+                <div className="flex items-center gap-2 min-w-0 flex-1">
+                  <div className="w-7 h-7 rounded-lg bg-rose-500 text-white flex items-center justify-center shrink-0 shadow-xs">
+                    <MapPin className="w-4 h-4 fill-white" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <span className="text-[11px] font-black text-gray-900 block truncate">{listing.title}</span>
+                    <span className="text-[9px] text-gray-500 block truncate">{listing.address}</span>
+                  </div>
+                </div>
+                <span className="text-[9px] font-black text-[#0033CC] bg-[#EAF3FD] px-2 py-1 rounded-lg shrink-0">
+                  Live GPS
+                </span>
+              </div>
+            </div>
+
+            {/* Prominent High-Visibility "Get Live Directions" Action Button */}
+            <a
+              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${listing.title} ${listing.address} ${listing.city.name}`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full py-3.5 px-4 bg-gradient-to-r from-[#0033CC] via-[#1A56DB] to-[#2563EB] hover:from-[#0029A3] hover:to-[#1D4ED8] text-white font-black text-xs rounded-2xl shadow-[0_8px_20px_rgba(0,51,204,0.32),inset_0_1px_2px_rgba(255,255,255,0.35)] flex items-center justify-center gap-2 transition-all active:scale-98 cursor-pointer"
+            >
+              <Navigation className="w-4 h-4 text-[#CCFF00] fill-[#CCFF00]" />
+              <span>Get Directions on Google Maps</span>
+              <ExternalLink className="w-3.5 h-3.5 text-white/80 ml-0.5" />
+            </a>
+          </div>
+
+          {/* 10. HOST / RECEPTION CARD */}
+          <div className="mx-3 p-4 rounded-[26px] bg-white border-2 border-white shadow-[0_6px_18px_rgba(30,70,120,0.06),inset_0_2px_3px_rgba(255,255,255,0.95)] flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-11 h-11 rounded-[16px] bg-gradient-to-br from-[#0033CC] to-[#2563EB] text-white flex items-center justify-center font-black text-sm shadow-xs shrink-0">
+                {listing.user?.name?.[0] || 'H'}
+              </div>
+              <div className="min-w-0">
+                <span className="text-[9px] text-gray-400 font-black uppercase tracking-wider block">
+                  {isHotel ? 'Property Desk' : 'Property Owner'}
+                </span>
+                <h4 className="text-xs font-black text-gray-900 truncate">{listing.user?.name || 'Verified Host'}</h4>
+                <span className="text-[10px] text-[#2F6B4F] font-bold block">● Verified Partner</span>
+              </div>
+            </div>
+
+            <a
+              href={`tel:${listing.contactPhone}`}
+              className="px-3.5 py-2 rounded-xl bg-[#EAF3FD] text-[#0033CC] border border-[#CCE1FD] font-black text-xs flex items-center gap-1.5 shadow-2xs active:scale-95 transition-transform shrink-0"
+            >
+              <Phone className="w-3.5 h-3.5" />
+              <span>Call</span>
+            </a>
+          </div>
+
+          {/* 11. REVIEWS SECTION */}
+          <div className="mx-3 p-4 rounded-[26px] bg-[#F8FAFD] border-2 border-white shadow-[0_10px_25px_rgba(30,70,120,0.08),inset_0_2px_4px_rgba(255,255,255,0.95)] space-y-3">
+            <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-2">
+              <div>
+                <h3 className="text-xs font-black text-[#0f172a] uppercase tracking-wider">User Reviews</h3>
+                <p className="text-[10px] text-gray-500 font-medium">Verified customer feedback</p>
+              </div>
+              <span className="text-xs font-black text-[#0f172a] flex items-center gap-1 bg-[#FEF5E3] border border-[#FDE5C3] px-3 py-1 rounded-full">
+                <Star className="w-3 h-3 fill-[#FFB800] text-[#FFB800]" />
+                4.8
+              </span>
+            </div>
+
+            <div className="space-y-2.5">
+              {paginatedReviews.slice(0, 2).map((rev) => (
+                <div key={rev.id} className="min-w-0 p-3 bg-white rounded-[18px] border border-gray-100 shadow-2xs space-y-1.5">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-xs font-black text-gray-900 truncate">{rev.user?.name || 'Verified Guest'}</span>
+                    <div className="flex items-center text-amber-500 shrink-0">
+                      {Array.from({ length: rev.rating }).map((_, rIdx) => (
+                        <Star key={rIdx} className="w-3 h-3 fill-amber-500" />
+                      ))}
+                    </div>
+                  </div>
+                  <p className="text-xs text-gray-600 font-medium leading-snug break-words">{rev.comment}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* ═══════════════════════════════════════════════════════════════
+            💻 DESKTOP VIEW (100% UNTOUCHED - Only visible on md and up)
+           ═══════════════════════════════════════════════════════════════ */}
+        <div className="hidden md:block">
+          {/* ── BREADCRUMBS ── */}
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
           <nav className="flex items-center gap-2 text-xs text-gray-500 overflow-x-auto whitespace-nowrap">
             <Link href="/" className="bg-[#F8FAFD] hover:bg-white text-gray-700 px-4 py-2 rounded-full border-2 border-white shadow-[0_4px_10px_rgba(0,0,0,0.04),inset_0_1px_2px_rgba(255,255,255,0.95)] font-bold transition-colors">
               Home
@@ -1034,13 +1681,14 @@ export function ListingDetailView({ listing }: ListingDetailViewProps) {
             </div>
           </div>
         </div>
-      </main>
+      </div>
+    </main>
 
-      {/* ── MOBILE STICKY BOTTOM STARTING PRICE & CTA BAR ── */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-xl border-t border-gray-200/90 px-4 py-3 shadow-[0_-10px_30px_rgba(0,0,0,0.12)] md:hidden flex items-center justify-between gap-3">
+      {/* ── MOBILE STICKY BOTTOM GLASS CTA BAR (GPU OPTIMIZED) ── */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-white/80 px-4 pt-2.5 pb-safe shadow-[0_-8px_25px_rgba(0,0,0,0.08)] md:hidden flex items-center justify-between gap-3 transform-gpu">
         {/* Left Side: Starting Price / Rent & Tag */}
         <div className="min-w-0">
-          <div className="flex items-center gap-1.5 mb-0.5">
+          <div className="flex items-center gap-1 mb-0.5">
             <span className="w-1.5 h-1.5 rounded-full bg-[#0033CC] animate-pulse" />
             <span className="text-[10px] font-black text-gray-500 uppercase tracking-wider">
               {isHotel ? 'Starting From' : (listing.price && Number(listing.price) > 0) ? 'Monthly Rent' : 'Pricing'}
@@ -1054,7 +1702,7 @@ export function ListingDetailView({ listing }: ListingDetailViewProps) {
                 ? `₹${Number(listing.price).toLocaleString('en-IN')}`
                 : 'On Request'}
             </span>
-            <span className="text-[11px] font-bold text-gray-500">
+            <span className="text-[10px] font-bold text-gray-500">
               {isHotel
                 ? '/ 2 Hours'
                 : (listing.price && Number(listing.price) > 0 && listing.priceType === 'PER_MONTH')
@@ -1063,7 +1711,7 @@ export function ListingDetailView({ listing }: ListingDetailViewProps) {
             </span>
           </div>
           <span className="text-[9px] font-bold text-[#2F6B4F] block truncate">
-            {isHotel ? '● Pay at Desk · Free Cancel' : '● Zero Brokerage · Direct Owner'}
+            {isHotel ? '● Pay at Hotel Reception' : '● Zero Brokerage · Direct Owner'}
           </span>
         </div>
 
@@ -1071,29 +1719,29 @@ export function ListingDetailView({ listing }: ListingDetailViewProps) {
         <div className="flex items-center gap-2 shrink-0">
           <a
             href={`tel:${listing.contactPhone}`}
-            className="w-10 h-10 rounded-xl bg-gray-100 text-gray-700 hover:bg-gray-200 flex items-center justify-center transition-all border border-gray-200 shadow-2xs"
-            title="Call"
+            className="w-11 h-11 rounded-2xl bg-[#F0F5FB] text-gray-800 hover:bg-[#EAF3FD] flex items-center justify-center transition-transform active:scale-95 border-2 border-white shadow-[0_4px_12px_rgba(0,0,0,0.05),inset_0_2px_3px_rgba(255,255,255,0.9)]"
+            title="Call Reception"
           >
-            <Phone className="w-4 h-4" />
+            <Phone className="w-4 h-4 text-gray-800" />
           </a>
 
           {isHotel ? (
             <button
               type="button"
               onClick={handleOpenBooking}
-              className="bg-gradient-to-r from-[#0033CC] to-[#2563EB] text-white text-xs font-black px-4 py-2.5 rounded-xl shadow-[0_4px_14px_rgba(0,51,204,0.35)] flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all"
+              className="bg-gradient-to-r from-[#0033CC] via-[#1A56DB] to-[#2563EB] text-white text-xs font-black px-5 py-3 rounded-2xl shadow-[0_6px_20px_rgba(0,51,204,0.35),inset_0_1px_2px_rgba(255,255,255,0.35)] flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all"
             >
               <span>Book Hourly</span>
-              <ArrowRight className="w-3.5 h-3.5 stroke-[2.5]" />
+              <ArrowRight className="w-4 h-4 stroke-[2.5]" />
             </button>
           ) : (
             <a
               href={`https://wa.me/91${(listing.contactWhatsApp || listing.contactPhone).replace(/\D/g, '')}?text=Hi,%20I%20am%20interested%20in%20${encodeURIComponent(listing.title)}%20on%20SearchBook`}
               target="_blank"
               rel="noreferrer"
-              className="bg-[#25D366] text-white text-xs font-black px-4 py-2.5 rounded-xl shadow-[0_4px_14px_rgba(37,211,102,0.35)] flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all"
+              className="bg-[#25D366] text-white text-xs font-black px-5 py-3 rounded-2xl shadow-[0_6px_20px_rgba(37,211,102,0.35),inset_0_1px_2px_rgba(255,255,255,0.35)] flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all"
             >
-              <MessageCircle className="w-3.5 h-3.5 fill-white" />
+              <MessageCircle className="w-4 h-4 fill-white" />
               <span>WhatsApp</span>
             </a>
           )}

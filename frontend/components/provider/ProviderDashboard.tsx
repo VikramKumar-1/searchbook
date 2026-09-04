@@ -324,9 +324,15 @@ export function ProviderDashboard() {
                       )}
                     </div>
 
-                    <h3 className="text-base font-bold text-gray-900 truncate">
-                      {listing.title}
-                    </h3>
+                    <Link
+                      href={`/${listing.city?.slug || 'city'}/${listing.category?.slug || 'services'}/${listing.slug}`}
+                      target="_blank"
+                      className="hover:underline hover:text-blue-600 transition-colors block"
+                    >
+                      <h3 className="text-base font-bold text-gray-900 truncate">
+                        {listing.title}
+                      </h3>
+                    </Link>
 
                     <div className="flex flex-wrap items-center gap-y-1 gap-x-3 text-xs text-gray-500 mt-1.5">
                       <span className="flex items-center gap-1">
@@ -377,6 +383,16 @@ export function ProviderDashboard() {
                         {listing._count.reviews} reviews
                       </span>
                     </div>
+
+                    <Link
+                      href={`/${listing.city?.slug || 'city'}/${listing.category?.slug || 'services'}/${listing.slug}`}
+                      target="_blank"
+                      className="px-2.5 py-1.5 text-xs font-semibold rounded-lg border border-blue-200 text-blue-700 bg-blue-50 hover:bg-blue-100 transition-colors flex items-center gap-1 cursor-pointer"
+                      title="View Live Listing"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" />
+                      <span>View</span>
+                    </Link>
 
                     <button
                       onClick={() => handleToggle(listing.id)}

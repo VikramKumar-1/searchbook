@@ -58,16 +58,23 @@ export function Navbar() {
     }
   }, [userCoords, autoDetectLocation]);
 
+  const segments = pathname.split('/').filter(Boolean);
+  const isListingDetailPage =
+    pathname.startsWith('/listing/') ||
+    (pathname.startsWith('/listings/') && pathname !== '/listings') ||
+    (segments.length === 3 && !['provider', 'api', 'admin', 'auth', '_next'].includes(segments[0]));
+
   return (
     <>
-      {/* ═══ MOBILE ONLY — Unified App Header (No "10 minutes", Seamless Theme) ═══ */}
-      <header 
-        className={`md:hidden px-4 pt-3 pb-2 transition-all duration-500 ease-out ${
-          isHomePage 
-            ? `${theme.navBg} border-none` 
-            : 'bg-white border-b border-gray-100 shadow-2xs'
-        }`}
-      >
+      {/* ═══ MOBILE ONLY — Unified App Header (Hidden on listing detail pages) ═══ */}
+      {!isListingDetailPage && (
+        <header 
+          className={`md:hidden px-4 pt-3 pb-2 transition-all duration-500 ease-out ${
+            isHomePage 
+              ? `${theme.navBg} border-none` 
+              : 'bg-white border-b border-gray-100 shadow-2xs'
+          }`}
+        >
         <div className="flex items-center justify-between">
           {/* Left: Brand + Location (Unified & Clean, Zero "10 minutes") */}
           <div className="flex flex-col">
@@ -126,6 +133,7 @@ export function Navbar() {
           </div>
         </div>
       </header>
+      )}
 
       {/* Location Selector Modal */}
       <LocationSelectorModal />

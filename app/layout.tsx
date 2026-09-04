@@ -16,6 +16,7 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
   title: 'SearchBook | Local City Marketplace',
   description: 'Find verified PGs, Hostels, Hourly Hotels, Flats, and Home Services with 0 Brokerage.',
 };
@@ -27,11 +28,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={plusJakartaSans.variable}>
-      <body className={`${plusJakartaSans.className} font-sans bg-slate-50 text-slate-900 antialiased flex flex-col min-h-screen`}>
+      <body className={`${plusJakartaSans.className} font-sans bg-slate-50 text-slate-900 antialiased flex flex-col min-h-screen w-full max-w-full overflow-x-hidden`}>
         <QueryProvider>
           <Navbar />
           {/* 📱 pb-16 = space for mobile bottom nav | 🖥️ md:pb-0 = no extra space on desktop */}
-          <div className="flex-1 pb-16 md:pb-0">
+          <div className="flex-1 pb-16 md:pb-0 w-full max-w-full overflow-x-hidden">
             {children}
           </div>
           <Footer />

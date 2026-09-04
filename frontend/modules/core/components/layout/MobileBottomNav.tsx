@@ -63,6 +63,17 @@ const NAV_ITEMS: NavItem[] = [
 export function MobileBottomNav() {
   const pathname = usePathname();
 
+  // Hide mobile bottom nav on listing detail pages to prevent overlapping the sticky booking CTA bar
+  const segments = pathname.split('/').filter(Boolean);
+  const isListingDetailPage =
+    pathname.startsWith('/listing/') ||
+    (pathname.startsWith('/listings/') && pathname !== '/listings') ||
+    (segments.length === 3 && !['provider', 'api', 'admin', 'auth', '_next'].includes(segments[0]));
+
+  if (isListingDetailPage) {
+    return null;
+  }
+
   const isActive = (item: NavItem): boolean => {
     if (item.href === '/' && pathname === '/') return true;
     if (item.href === '/') return false;

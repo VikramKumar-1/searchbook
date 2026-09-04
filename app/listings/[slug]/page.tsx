@@ -1,7 +1,6 @@
 import { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
 import { listingService } from '@backend/modules/listing/listing.service';
-import { ListingDetailView } from '@frontend/modules/listing/components/ListingDetailView';
 
 interface PageProps {
   params: Promise<{
@@ -13,19 +12,17 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { slug } = await params;
   try {
     const listing = await listingService.getListingBySlug(slug);
-    if (!listing) return { title: 'Hotel Not Found | SearchBook' };
+    if (!listing) return { title: 'Listing | SearchBook' };
 
     const cityName = listing.city?.name || 'India';
-    const citySlug = listing.city?.slug || 'city';
-    const categorySlug = listing.category?.slug || 'services';
     const title = `${listing.title} - ${cityName} | SearchBook`;
-    const description = `${listing.title} in ${listing.address}. Direct booking with 0 brokerage on SearchBook.`;
+    const description = `${listing.title} in ${listing.address}, ${cityName}. Direct booking with 0 brokerage on SearchBook.`;
 
     return {
       title,
       description,
       alternates: {
-        canonical: `/${citySlug}/${categorySlug}/${listing.slug}`,
+        canonical: `/${listing.city?.slug || 'city'}/${listing.category?.slug || 'service'}/${listing.slug}`,
       },
     };
   } catch {
@@ -33,14 +30,18 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 }
 
-export default async function DirectListingPage({ params }: PageProps) {
+/**
+ * Direct route handler for `/listings/[slug]`.
+ * Redirects to the full canonical SEO route: `/[city]/[category]/[slug]`
+ */
+export default async function ListingsDirectPage({ params }: PageProps) {
   const { slug } = await params;
   
   let listing;
   try {
     listing = await listingService.getListingBySlug(slug);
   } catch (err) {
-    console.error(`[DirectListingPage Error] Failed to fetch listing for slug "${slug}":`, err);
+    console.error(`[ListingsDirectPage Error] Failed to fetch listing for slug "${slug}":`, err);
     notFound();
   }
 

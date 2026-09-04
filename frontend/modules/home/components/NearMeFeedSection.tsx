@@ -203,7 +203,10 @@ export function NearMeFeedSection() {
                 className="bg-white rounded-2xl overflow-hidden border border-gray-200/80 hover:border-blue-300 shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col group"
               >
                 {/* Image & Top Badges */}
-                <div className="relative h-44 w-full overflow-hidden bg-gray-100">
+                <Link
+                  href={`/${item.city?.slug || 'city'}/${item.category?.slug || 'services'}/${item.slug}`}
+                  className="relative h-44 w-full overflow-hidden bg-gray-100 block"
+                >
                   <img
                     src={primaryPhoto}
                     alt={item.title}
@@ -229,19 +232,21 @@ export function NearMeFeedSection() {
                     {item.priceType === 'PER_HOUR' && <span className="text-[10px] text-gray-500 font-medium"> / 2 hrs</span>}
                     {item.priceType === 'PER_MEAL' && <span className="text-[10px] text-gray-500 font-medium"> / meal</span>}
                   </div>
-                </div>
+                </Link>
 
                 {/* Content */}
                 <div className="p-3.5 flex-1 flex flex-col justify-between">
                   <div>
                     <div className="flex items-center gap-1 text-[11px] font-bold text-gray-500 mb-1">
-                      <MapPin className="w-3 h-3 text-red-500 shrink-0" />
+                      <MapPin className="w-3.5 h-3.5 text-red-500 shrink-0" />
                       <span className="truncate">{item.address}</span>
                     </div>
 
-                    <h3 className="text-sm font-black text-gray-900 leading-snug line-clamp-2 group-hover:text-[#0033CC] transition-colors">
-                      {item.title}
-                    </h3>
+                    <Link href={`/${item.city?.slug || 'city'}/${item.category?.slug || 'services'}/${item.slug}`}>
+                      <h3 className="text-sm font-black text-gray-900 leading-snug line-clamp-2 group-hover:text-[#0033CC] transition-colors">
+                        {item.title}
+                      </h3>
+                    </Link>
                   </div>
 
                   {/* Actions */}
@@ -263,7 +268,7 @@ export function NearMeFeedSection() {
                         </a>
                       )}
                       <Link
-                        href={`/listings/${item.slug}`}
+                        href={`/${item.city?.slug || 'city'}/${item.category?.slug || 'services'}/${item.slug}`}
                         className="px-3 py-1.5 rounded-xl bg-[#0033CC] hover:bg-blue-800 text-white font-bold text-[11px] flex items-center gap-1 transition-colors"
                       >
                         <span>View</span>

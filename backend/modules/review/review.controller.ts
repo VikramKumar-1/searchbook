@@ -24,8 +24,8 @@ export const reviewController = {
       const phone = req.nextUrl.searchParams.get('phone') || undefined;
       const pending = await reviewService.getPendingReview(optionalUser?.userId, phone);
       return apiSuccess(pending);
-    } catch (error) {
-      return handleError(error);
+    } catch {
+      return apiSuccess(null);
     }
   },
 
