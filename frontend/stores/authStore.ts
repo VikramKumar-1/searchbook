@@ -9,15 +9,16 @@ export interface AuthUser {
   role: string;
   avatar: string | null;
   isPremium: boolean;
+  createdAt?: string | Date;
 }
 
 interface AuthState {
   user: AuthUser | null;
   isAuthModalOpen: boolean;
-  authModalMode: 'login' | 'register';
+  authModalMode: 'login' | 'register' | 'phone-otp';
   redirectUrlOnSuccess: string | null;
   setUser: (user: AuthUser | null) => void;
-  openAuthModal: (mode?: 'login' | 'register', redirectUrl?: string | null) => void;
+  openAuthModal: (mode?: 'login' | 'register' | 'phone-otp', redirectUrl?: string | null) => void;
   closeAuthModal: () => void;
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;

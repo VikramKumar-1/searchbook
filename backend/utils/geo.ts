@@ -70,8 +70,9 @@ export function calculateScore(params: {
 }): number {
   const { distanceKm, maxRadiusKm, avgRating, createdAt, isVerified, isPremium } = params;
 
-  // Distance score: 1.0 when distance=0, 0.0 when distance=maxRadius
-  const distanceScore = Math.max(0, 1 - distanceKm / maxRadiusKm);
+  // Distance score: exponential decay with half-life of 5km for hyperlocal accuracy
+  const halfLifeKm = 5;
+  const distanceScore = Math.exp((-Math.LN2 * distanceKm) / halfLifeKm);
 
   // Rating score: 0 to 1
   const ratingScore = avgRating / 5;
@@ -87,10 +88,81 @@ export function calculateScore(params: {
   const premiumScore = isPremium ? 1 : 0;
 
   return (
-    0.40 * distanceScore +
-    0.30 * ratingScore +
+    0.45 * distanceScore +
+    0.25 * ratingScore +
     0.15 * recencyScore +
     0.10 * verifiedScore +
     0.05 * premiumScore
   );
 }
+
+/**
+ * ═══════════════════════════════════════════════════════════
+ * 🔄 DSA STRATIFIED ROUND-ROBIN MULTI-STREAM MERGE
+ * ═══════════════════════════════════════════════════════════
+ * 
+ * Used for "Near Me" full feeds.
+ * If 20 closest items are all PGs, naive distance sorting displays only PGs.
+ * This algorithm groups items into Category Buckets (Flats, PGs, Hotels, Services, Tiffin),
+ * sorts each bucket by score desc, and round-robins across buckets.
+ * 
+ * Time Complexity: O(N log K + N)
+ * Space Complexity: O(N)
+ */
+export function interleaveCategoriesRoundRobin<T extends { category?: { slug?: string } | null; score: number }>(
+  items: T[],
+  limit: number
+): T[] {
+  if (items.length <= 1) return items;
+
+  // 1. Group candidates into category queues
+  const buckets = new Map<string, T[]>();
+
+  for (const item of items) {
+    const rawCategory = item.category?.slug || 'other';
+    // Map granular sub-services to high-level umbrella buckets
+    let umbrella = rawCategory;
+    if (['pg-hostel', 'hostel', 'pg', 'boys-pg', 'girls-pg', 'co-living'].includes(rawCategory)) umbrella = 'pg-hostel';
+    else if (['flats', 'flat', 'apartment', 'house-rent'].includes(rawCategory)) umbrella = 'flats';
+    else if (['hourly-hotels', 'hotels', 'hourly-hotel', 'hotel'].includes(rawCategory)) umbrella = 'hourly-hotels';
+    else if (['mess-tiffin', 'tiffin', 'food', 'mess', 'home-cook'].includes(rawCategory)) umbrella = 'mess-tiffin';
+    else umbrella = 'services'; // maid, plumber, electrician, etc.
+
+    const list = buckets.get(umbrella) || [];
+    list.push(item);
+    buckets.set(umbrella, list);
+  }
+
+  // 2. Ensure each category queue is ordered by highest score
+  for (const list of buckets.values()) {
+    list.sort((a, b) => b.score - a.score);
+  }
+
+  // 3. Priority Order of categories for the round-robin cycle:
+  // [Flats, PGs, Hourly Hotels, Tiffin/Food, Services]
+  const priorityOrder = ['pg-hostel', 'flats', 'hourly-hotels', 'mess-tiffin', 'services'];
+  const activeKeys = [
+    ...priorityOrder.filter((k) => buckets.has(k)),
+    ...Array.from(buckets.keys()).filter((k) => !priorityOrder.includes(k)),
+  ];
+
+  const result: T[] = [];
+  let remaining = items.length;
+
+  while (result.length < limit && remaining > 0) {
+    let addedInPass = false;
+    for (const key of activeKeys) {
+      const bucket = buckets.get(key);
+      if (bucket && bucket.length > 0) {
+        result.push(bucket.shift()!);
+        remaining--;
+        addedInPass = true;
+        if (result.length >= limit) break;
+      }
+    }
+    if (!addedInPass) break;
+  }
+
+  return result;
+}
+

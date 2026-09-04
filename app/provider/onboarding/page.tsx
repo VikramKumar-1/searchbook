@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ChevronRight } from 'lucide-react';
+import { useAuthStore } from '@frontend/stores/authStore';
 
 const LISTING_CATEGORIES = [
   {
@@ -58,10 +59,25 @@ const LISTING_CATEGORIES = [
 
 export default function ProviderOnboarding() {
   const router = useRouter();
+  const user = useAuthStore((s) => s.user);
+  const openAuthModal = useAuthStore((s) => s.openAuthModal);
   const [selected, setSelected] = useState<string | null>(null);
+
+  // If user is not a registered business partner, redirect to partner registration
+  useEffect(() => {
+    if (!user) {
+      router.replace('/provider/register');
+    } else if (user.role !== 'PROVIDER') {
+      router.replace('/provider/register');
+    }
+  }, [user, router]);
 
   const handleContinue = () => {
     if (!selected) return;
+    if (!user || user.role !== 'PROVIDER') {
+      router.push('/provider/register');
+      return;
+    }
     router.push(`/provider/create?category=${selected}`);
   };
 

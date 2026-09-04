@@ -76,6 +76,30 @@ model User {
   role          Role      @default(USER)
   isPremium     Boolean   @default(false)
   
+  // Partner / Host KYC & Legal Verification
+  businessName  String?
+  businessType  String?
+  whatsapp      String?
+  govtIdType    String?
+  govtIdNumber  String?
+  govtIdPhoto   String?
+  drivingLicenseNumber String?
+  drivingLicensePhoto  String?
+  
+  // Professional Credentials & Trust Verification (Doctor, Tutor, Technician)
+  qualification        String?
+  medicalRegNumber     String?
+  certificatePhoto     String?
+  clinicAddress        String?
+  doesHomeVisit        Boolean   @default(true)
+  bio                  String?
+  subjectsOrSpeciality String?
+
+  kycStatus     String    @default("PENDING")
+  kycNotes      String?
+  legalAgreed   Boolean   @default(false)
+  legalAgreedAt DateTime?
+
   listings      Listing[]
   reviews       Review[]
   bookmarks     Bookmark[]

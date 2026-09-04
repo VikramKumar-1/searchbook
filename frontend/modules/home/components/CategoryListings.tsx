@@ -1,6 +1,14 @@
+/**
+ * CategoryListings Component
+ * 
+ * Mobile Layout: Uses horizontal scrolling list (`mobile-scroll-x`) with fixed width snap cards (260px)
+ * Desktop Layout: Uses standard CSS grid (md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4)
+ * Both layouts use the same ListingCard component underneath.
+ */
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { useListings, ListingCardItem } from '@frontend/modules/listing/hooks/useListings';
 import { ListingCard } from '@frontend/modules/listing/components/ListingCard';
 import { Loader2 } from 'lucide-react';
@@ -52,22 +60,22 @@ export function CategoryListings({
   const exploreUrl = categorySlug ? `/listings?category=${categorySlug}` : '/listings';
 
   return (
-    <section className={`${bgWhite ? 'bg-white' : 'bg-[#FAFBFD]'} py-14 px-5 md:px-8 border-b border-gray-100/80`}>
+    <section className={`${bgWhite ? 'clay-bg-mint md:bg-white' : 'clay-bg-blue md:bg-[#FAFBFD]'} py-6 md:py-14 px-4 md:px-8 border-b border-gray-100/80`}>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex items-end justify-between mb-8">
+        <div className="flex items-end justify-between mb-4 md:mb-8">
           <div>
-            <p className="text-xs font-bold text-[#0033CC] uppercase tracking-widest mb-1">{subtitle}</p>
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-[#0f172a] tracking-tight">
+            <p className="text-[10px] md:text-xs font-bold text-[#0033CC] uppercase tracking-widest mb-1">{subtitle}</p>
+            <h2 className="text-lg md:text-3xl lg:text-4xl font-black text-[#0f172a] tracking-tight">
               {title}
             </h2>
           </div>
-          <a
+          <Link
             href={exploreUrl}
             className="text-sm font-bold text-[#0033CC] hover:underline hidden md:block shrink-0 ml-4"
           >
             View all →
-          </a>
+          </Link>
         </div>
 
         {/* Loading */}
@@ -85,20 +93,31 @@ export function CategoryListings({
           </div>
         )}
 
-        {/* Grid */}
+        {/* Content */}
         {!isLoading && !isError && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-            {displayData.map((listing: ListingCardItem) => (
-              <ListingCard 
-                key={listing.id} 
-                listing={listing} 
-                fallbackImage={fallbackImage}
-              />
-            ))}
-          </div>
+          <>
+            {/* ═══ MOBILE LAYOUT — Horizontal scroll ═══ */}
+            <div className="md:hidden mobile-scroll-x will-change-scroll px-5 -mx-5">
+              {displayData.map((listing: ListingCardItem) => (
+                <div key={listing.id} className="w-[260px]">
+                  <ListingCard listing={listing} fallbackImage={fallbackImage} />
+                </div>
+              ))}
+            </div>
+
+            {/* ═══ DESKTOP LAYOUT — Grid ═══ */}
+            <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+              {displayData.map((listing: ListingCardItem) => (
+                <ListingCard 
+                  key={listing.id} 
+                  listing={listing} 
+                  fallbackImage={fallbackImage}
+                />
+              ))}
+            </div>
+          </>
         )}
       </div>
     </section>
   );
 }
-

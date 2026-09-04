@@ -75,6 +75,51 @@ const POPULAR_LOCATIONS: Array<{
   { name: 'Indiranagar', slug: 'indiranagar', type: 'locality', context: 'Bengaluru', citySlug: 'bengaluru', localitySlug: 'indiranagar', keywords: ['indiranagar', '100 feet road', 'bengaluru'] },
   { name: 'HSR Layout', slug: 'hsr-layout', type: 'locality', context: 'Bengaluru', citySlug: 'bengaluru', localitySlug: 'hsr-layout', keywords: ['hsr', 'hsr layout', 'bengaluru'] },
   { name: 'Whitefield', slug: 'whitefield', type: 'locality', context: 'Bengaluru', citySlug: 'bengaluru', localitySlug: 'whitefield', keywords: ['whitefield', 'itpb', 'bengaluru'] },
+
+  // Hyderabad
+  { name: 'Hyderabad', slug: 'hyderabad', type: 'city', context: 'Cyberabad Hub', citySlug: 'hyderabad', keywords: ['hyderabad', 'telangana', 'secunderabad', 'cyberabad'] },
+  { name: 'Hitec City', slug: 'hitec-city', type: 'locality', context: 'Hyderabad', citySlug: 'hyderabad', localitySlug: 'hitec-city', keywords: ['hitec city', 'cyber towers', 'hyderabad'] },
+  { name: 'Gachibowli', slug: 'gachibowli', type: 'locality', context: 'Hyderabad', citySlug: 'hyderabad', localitySlug: 'gachibowli', keywords: ['gachibowli', 'financial district', 'hyderabad'] },
+  { name: 'Madhapur', slug: 'madhapur', type: 'locality', context: 'Hyderabad', citySlug: 'hyderabad', localitySlug: 'madhapur', keywords: ['madhapur', 'aaspire', 'hyderabad'] },
+  { name: 'Banjara Hills', slug: 'banjara-hills', type: 'locality', context: 'Hyderabad', citySlug: 'hyderabad', localitySlug: 'banjara-hills', keywords: ['banjara hills', 'road no 12', 'hyderabad'] },
+
+  // Mumbai
+  { name: 'Mumbai', slug: 'mumbai', type: 'city', context: 'Financial Capital', citySlug: 'mumbai', keywords: ['mumbai', 'bombay', 'maharashtra'] },
+  { name: 'Andheri West', slug: 'andheri-west', type: 'locality', context: 'Mumbai', citySlug: 'mumbai', localitySlug: 'andheri-west', keywords: ['andheri', 'andheri west', 'lokhandwala', 'mumbai'] },
+  { name: 'Bandra West', slug: 'bandra-west', type: 'locality', context: 'Mumbai', citySlug: 'mumbai', localitySlug: 'bandra-west', keywords: ['bandra', 'bandra west', 'linking road', 'mumbai'] },
+  { name: 'Powai', slug: 'powai', type: 'locality', context: 'Mumbai (Hiranandani)', citySlug: 'mumbai', localitySlug: 'powai', keywords: ['powai', 'hiranandani', 'iit bombay', 'mumbai'] },
+  { name: 'Juhu', slug: 'juhu', type: 'locality', context: 'Mumbai', citySlug: 'mumbai', localitySlug: 'juhu', keywords: ['juhu', 'beach', 'mumbai'] },
+
+  // Pune
+  { name: 'Pune', slug: 'pune', type: 'city', context: 'Oxford of the East & IT Hub', citySlug: 'pune', keywords: ['pune', 'poona', 'maharashtra'] },
+  { name: 'Viman Nagar', slug: 'viman-nagar', type: 'locality', context: 'Pune', citySlug: 'pune', localitySlug: 'viman-nagar', keywords: ['viman nagar', 'symbiosis', 'phoenix mall', 'pune'] },
+  { name: 'Hinjewadi', slug: 'hinjewadi', type: 'locality', context: 'Pune (IT Park)', citySlug: 'pune', localitySlug: 'hinjewadi', keywords: ['hinjewadi', 'phase 1', 'it park', 'pune'] },
+  { name: 'Kothrud', slug: 'kothrud', type: 'locality', context: 'Pune', citySlug: 'pune', localitySlug: 'kothrud', keywords: ['kothrud', 'mit', 'pune'] },
+  { name: 'Wakad', slug: 'wakad', type: 'locality', context: 'Pune', citySlug: 'pune', localitySlug: 'wakad', keywords: ['wakad', 'dange chowk', 'pune'] },
+
+  // Kolkata
+  { name: 'Kolkata', slug: 'kolkata', type: 'city', context: 'Cultural Capital', citySlug: 'kolkata', keywords: ['kolkata', 'calcutta', 'west bengal'] },
+  { name: 'Salt Lake', slug: 'salt-lake', type: 'locality', context: 'Kolkata (Sector V IT)', citySlug: 'kolkata', localitySlug: 'salt-lake', keywords: ['salt lake', 'sector 5', 'bidhannagar', 'kolkata'] },
+  { name: 'New Town', slug: 'new-town', type: 'locality', context: 'Kolkata / Rajarhat', citySlug: 'kolkata', localitySlug: 'new-town', keywords: ['new town', 'rajarhat', 'eco park', 'kolkata'] },
+  { name: 'Park Street', slug: 'park-street', type: 'locality', context: 'Kolkata', citySlug: 'kolkata', localitySlug: 'park-street', keywords: ['park street', 'camac street', 'kolkata'] },
+
+  // Ahmedabad
+  { name: 'Ahmedabad', slug: 'ahmedabad', type: 'city', context: 'Commercial Hub of Gujarat', citySlug: 'ahmedabad', keywords: ['ahmedabad', 'gujarat', 'amdavad'] },
+  { name: 'Navrangpura', slug: 'navrangpura', type: 'locality', context: 'Ahmedabad', citySlug: 'ahmedabad', localitySlug: 'navrangpura', keywords: ['navrangpura', 'gujarat university', 'ahmedabad'] },
+  { name: 'SG Highway', slug: 'sg-highway', type: 'locality', context: 'Ahmedabad', citySlug: 'ahmedabad', localitySlug: 'sg-highway', keywords: ['sg highway', 'iskcon', 'prahlad nagar', 'ahmedabad'] },
+  { name: 'Vastrapur', slug: 'vastrapur', type: 'locality', context: 'Ahmedabad (IIM)', citySlug: 'ahmedabad', localitySlug: 'vastrapur', keywords: ['vastrapur', 'iim', 'alpha one', 'ahmedabad'] },
+
+  // Dehradun
+  { name: 'Dehradun', slug: 'dehradun', type: 'city', context: 'Valley Hub of Uttarakhand', citySlug: 'dehradun', keywords: ['dehradun', 'doon', 'uttarakhand'] },
+  { name: 'Rajpur Road', slug: 'rajpur-road', type: 'locality', context: 'Dehradun', citySlug: 'dehradun', localitySlug: 'rajpur-road', keywords: ['rajpur road', 'pacific mall', 'dehradun'] },
+  { name: 'Karanpur', slug: 'karanpur', type: 'locality', context: 'Dehradun (Student Hub)', citySlug: 'dehradun', localitySlug: 'karanpur', keywords: ['karanpur', 'dav', 'survey chowk', 'dehradun'] },
+  { name: 'Clement Town', slug: 'clement-town', type: 'locality', context: 'Dehradun', citySlug: 'dehradun', localitySlug: 'clement-town', keywords: ['clement town', 'graphic era', 'dehradun'] },
+
+  // Shimla
+  { name: 'Shimla', slug: 'shimla', type: 'city', context: 'Queen of Hills & Stays', citySlug: 'shimla', keywords: ['shimla', 'simla', 'himachal pradesh'] },
+  { name: 'Mall Road', slug: 'mall-road', type: 'locality', context: 'Shimla Center', citySlug: 'shimla', localitySlug: 'mall-road', keywords: ['mall road', 'ridge', 'lakkar bazar', 'shimla'] },
+  { name: 'Sanjauli', slug: 'sanjauli', type: 'locality', context: 'Shimla', citySlug: 'shimla', localitySlug: 'sanjauli', keywords: ['sanjauli', 'college', 'shimla'] },
+  { name: 'Summer Hill', slug: 'summer-hill', type: 'locality', context: 'Shimla (HPU)', citySlug: 'shimla', localitySlug: 'summer-hill', keywords: ['summer hill', 'hpu', 'shimla'] },
 ];
 
 export class LocationService {

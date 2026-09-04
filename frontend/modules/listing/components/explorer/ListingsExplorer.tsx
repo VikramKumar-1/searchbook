@@ -1,35 +1,47 @@
 'use client';
 
-import React, { useState, Suspense } from 'react';
+import React, { useState, useRef, useEffect, useMemo, memo, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { useListings } from '@frontend/modules/listing/hooks/useListings';
+import { useInfiniteListings } from '@frontend/modules/listing/hooks/useListings';
 import { ListingCard } from '@frontend/modules/listing/components/ListingCard';
 import { useDebounce } from '@frontend/hooks/useDebounce';
-import { Search, MapPin, Navigation, Building2, X, Plus } from 'lucide-react';
+import { Search, MapPin, Navigation, Building2, X, Plus, Grid, Home, Building, Clock, Utensils, Briefcase, Wrench, Zap, Flame, Droplets, ThermometerSnowflake, Shirt } from 'lucide-react';
 import Link from 'next/link';
+import { useLocationStore } from '@frontend/stores/locationStore';
+
+const MemoizedListingCard = memo(ListingCard);
 
 const CATEGORIES = [
-  { slug: '', label: '✨ All Categories' },
-  { slug: 'pg-hostel', label: '🛏️ Hostels & PGs' },
-  { slug: 'flats', label: '🏢 Flats & Houses' },
-  { slug: 'hourly-hotels', label: '🏨 Hourly Hotels' },
-  { slug: 'mess-tiffin', label: '🍲 Mess & Tiffin' },
-  { slug: 'maid', label: '🧹 Housemaid' },
-  { slug: 'home-cook', label: '👨‍🍳 Home Cook' },
-  { slug: 'plumber', label: '🔧 Plumber' },
-  { slug: 'electrician', label: '⚡ Electrician' },
-  { slug: 'gas-delivery', label: '🔥 Gas Delivery' },
-  { slug: 'water-supply', label: '💧 Water Tanker' },
-  { slug: 'ac-repair', label: '❄️ AC Repair' },
-  { slug: 'laundry', label: '👔 Laundry' },
+  { slug: '', label: 'All Categories', icon: Grid },
+  { slug: 'pg-hostel', label: 'Hostels & PGs', icon: Home },
+  { slug: 'flats', label: 'Flats & Houses', icon: Building },
+  { slug: 'hourly-hotels', label: 'Hourly Hotels', icon: Clock },
+  { slug: 'tiffin', label: 'Mess & Tiffin', icon: Utensils },
+  { slug: 'services', label: 'Home Services', icon: Wrench },
+  { slug: 'maid', label: 'Housemaid', icon: Briefcase },
+  { slug: 'plumber', label: 'Plumber', icon: Wrench },
+  { slug: 'electrician', label: 'Electrician', icon: Zap },
+  { slug: 'gas-delivery', label: 'Gas Delivery', icon: Flame },
+  { slug: 'water-supply', label: 'Water Tanker', icon: Droplets },
+  { slug: 'ac-repair', label: 'AC Repair', icon: ThermometerSnowflake },
+  { slug: 'laundry', label: 'Laundry', icon: Shirt },
 ];
 
 const CITIES = [
   { slug: '', name: 'All Cities' },
+  { slug: 'ranchi', name: 'Ranchi' },
+  { slug: 'patna', name: 'Patna' },
   { slug: 'delhi', name: 'Delhi NCR' },
   { slug: 'gurugram', name: 'Gurugram' },
   { slug: 'noida', name: 'Noida' },
-  { slug: 'ranchi', name: 'Ranchi' },
+  { slug: 'bengaluru', name: 'Bengaluru' },
+  { slug: 'hyderabad', name: 'Hyderabad' },
+  { slug: 'mumbai', name: 'Mumbai' },
+  { slug: 'pune', name: 'Pune' },
+  { slug: 'kolkata', name: 'Kolkata' },
+  { slug: 'ahmedabad', name: 'Ahmedabad' },
+  { slug: 'dehradun', name: 'Dehradun' },
+  { slug: 'shimla', name: 'Shimla' },
   { slug: 'chandigarh', name: 'Chandigarh' },
 ];
 
@@ -46,44 +58,62 @@ function ListingsContent() {
   const [searchQuery, setSearchQuery] = useState(initialSearch);
   const [debouncedSearch] = useDebounce(searchQuery, 300);
 
-  const [isLocating, setIsLocating] = useState(false);
-  const [userCoords, setUserCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const globalUserCoords = useLocationStore((s) => s.userCoords);
+  const isNearMeActive = useLocationStore((s) => s.isNearMeActive);
+  const activateNearMe = useLocationStore((s) => s.activateNearMe);
+  const disableNearMe = useLocationStore((s) => s.disableNearMe);
+  const isLocating = useLocationStore((s) => s.isLocating);
 
-  const { data, isLoading, isError, error } = useListings({
+  const effectiveCoords = isNearMeActive ? globalUserCoords : null;
+
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteListings({
     categorySlug: selectedCategory || undefined,
-    citySlug: selectedCity || undefined,
+    citySlug: isNearMeActive ? undefined : (selectedCity || undefined),
     search: debouncedSearch || undefined,
-    lat: userCoords?.lat,
-    lng: userCoords?.lng,
-    limit: 24,
-    page: 1,
+    lat: effectiveCoords?.lat,
+    lng: effectiveCoords?.lng,
+    limit: 16,
   });
 
-  const handleNearMe = () => {
-    if (userCoords) {
-      setUserCoords(null);
-      return;
-    }
+  const observerRef = useRef<HTMLDivElement | null>(null);
 
-    if (!navigator.geolocation) {
-      alert('Geolocation is not supported by your browser.');
-      return;
-    }
-
-    setIsLocating(true);
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setUserCoords({
-          lat: pos.coords.latitude,
-          lng: pos.coords.longitude,
-        });
-        setIsLocating(false);
+  useEffect(() => {
+    if (!hasNextPage || isFetchingNextPage) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          fetchNextPage();
+        }
       },
-      () => {
-        alert('Please allow location access to see listings near you.');
-        setIsLocating(false);
-      }
+      { threshold: 0.1, rootMargin: '250px' }
     );
+    const el = observerRef.current;
+    if (el) observer.observe(el);
+    return () => {
+      if (el) observer.unobserve(el);
+    };
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  const listings = useMemo(
+    () => data?.pages.flatMap((page) => page.data) || [],
+    [data?.pages]
+  );
+  const totalCount = data?.pages[0]?.meta?.total ?? listings.length;
+
+  const handleNearMe = async () => {
+    if (isNearMeActive) {
+      disableNearMe();
+      return;
+    }
+    await activateNearMe();
   };
 
   const handleCategorySelect = (slug: string) => {
@@ -101,8 +131,6 @@ function ListingsContent() {
     else params.delete('city');
     router.replace(`/listings?${params.toString()}`, { scroll: false });
   };
-
-  const listings = data?.data || [];
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
@@ -150,13 +178,13 @@ function ListingsContent() {
             <button
               onClick={handleNearMe}
               className={`px-3.5 py-2.5 text-xs font-bold rounded-xl border flex items-center gap-1.5 transition-all cursor-pointer shrink-0 ${
-                userCoords
-                  ? 'bg-blue-600 text-white border-blue-600 shadow-xs'
+                isNearMeActive
+                  ? 'bg-[#0033CC] text-white border-[#0033CC] shadow-xs'
                   : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'
               }`}
             >
               <Navigation className={`w-3.5 h-3.5 ${isLocating ? 'animate-spin' : ''}`} />
-              {userCoords ? 'Near Me (Active)' : 'Near Me'}
+              {isNearMeActive ? 'Near Me (Active)' : 'Near Me'}
             </button>
           </div>
         </div>
@@ -165,16 +193,18 @@ function ListingsContent() {
         <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide pt-1 border-t border-gray-100">
           {CATEGORIES.map((cat) => {
             const isSelected = selectedCategory === cat.slug;
+            const Icon = cat.icon;
             return (
               <button
                 key={cat.slug}
                 onClick={() => handleCategorySelect(cat.slug)}
-                className={`px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                className={`px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs ${
                   isSelected
-                    ? 'bg-blue-600 text-white shadow-xs font-bold'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-transparent'
+                    ? 'bg-blue-600 text-white font-bold border border-blue-700'
+                    : 'bg-white text-gray-700 hover:bg-blue-50 hover:text-blue-700 border border-gray-200/60'
                 }`}
               >
+                <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-blue-100' : 'text-gray-400'}`} />
                 {cat.label}
               </button>
             );
@@ -193,7 +223,7 @@ function ListingsContent() {
           <p className="text-xs text-gray-500 mt-0.5 font-medium">
             {isLoading
               ? 'Finding available listings...'
-              : `Showing ${listings.length} verified listings in your area`}
+              : `Showing ${listings.length} of ${totalCount} verified listings in your area`}
           </p>
         </div>
 
@@ -251,7 +281,7 @@ function ListingsContent() {
                 setSelectedCategory('');
                 setSelectedCity('');
                 setSearchQuery('');
-                setUserCoords(null);
+                disableNearMe();
                 router.replace('/listings');
               }}
               className="px-4 py-2 bg-gray-100 text-gray-700 text-xs font-bold rounded-xl hover:bg-gray-200 transition-colors cursor-pointer"
@@ -270,25 +300,67 @@ function ListingsContent() {
 
       {/* Listings Grid */}
       {!isLoading && !isError && listings.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-          {listings.map((item) => (
-            <ListingCard
-              key={item.id}
-              listing={{
-                id: item.id,
-                title: item.title,
-                slug: item.slug,
-                price: item.price !== null && item.price !== undefined ? Number(item.price) : null,
-                priceType: item.priceType,
-                photos: item.photos || [],
-                city: item.city,
-                category: item.category,
-                contactPhone: item.contactPhone,
-                contactWhatsApp: item.contactWhatsApp,
-                _count: item._count || { reviews: 0 },
-              }}
-            />
-          ))}
+        <div className="space-y-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+            {listings.map((item) => (
+              <MemoizedListingCard
+                key={item.id}
+                listing={{
+                  id: item.id,
+                  title: item.title,
+                  slug: item.slug,
+                  price: item.price !== null && item.price !== undefined ? Number(item.price) : null,
+                  priceType: item.priceType,
+                  photos: item.photos || [],
+                  city: item.city,
+                  category: item.category,
+                  contactPhone: item.contactPhone,
+                  contactWhatsApp: item.contactWhatsApp,
+                  _count: item._count || { reviews: 0 },
+                }}
+              />
+            ))}
+          </div>
+
+          {/* Infinite Scroll Bottom Sentinel & Skeleton Loader */}
+          {hasNextPage && (
+            <div ref={observerRef} className="pt-4">
+              {isFetchingNextPage ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                  {Array.from({ length: 4 }).map((_, i) => (
+                    <div
+                      key={`next-skel-${i}`}
+                      className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-xs animate-pulse"
+                    >
+                      <div className="aspect-[4/3] bg-gray-200" />
+                      <div className="p-4 space-y-3">
+                        <div className="h-4 bg-gray-200 rounded w-3/4" />
+                        <div className="h-3 bg-gray-200 rounded w-1/2" />
+                        <div className="h-8 bg-gray-100 rounded-lg pt-2" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="flex justify-center py-4">
+                  <button
+                    onClick={() => fetchNextPage()}
+                    className="text-xs font-bold text-blue-600 hover:text-blue-700 bg-blue-50 px-4 py-2 rounded-xl transition-colors cursor-pointer"
+                  >
+                    Load More Listings ↓
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {!hasNextPage && listings.length > 0 && (
+            <div className="text-center py-8 border-t border-gray-100">
+              <p className="text-xs text-gray-400 font-medium">
+                ✓ You have reached the end of the listings ({totalCount} total)
+              </p>
+            </div>
+          )}
         </div>
       )}
     </div>

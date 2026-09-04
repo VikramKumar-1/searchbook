@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
 import { apiClient } from '@frontend/lib/apiClient';
 
 export interface FetchListingsParams {
@@ -64,6 +64,34 @@ export function useListings(params: FetchListingsParams = {}) {
         data: response.data,
         meta: response.meta as ListingsApiResponse['meta']
       };
+    },
+  });
+}
+
+export function useInfiniteListings(params: Omit<FetchListingsParams, 'page'> = {}) {
+  return useInfiniteQuery<ListingsApiResponse>({
+    queryKey: ['listings', 'infinite', params],
+    initialPageParam: 1,
+    queryFn: async ({ pageParam = 1 }) => {
+      const cleanParams: Record<string, string> = { page: String(pageParam) };
+      Object.entries(params).forEach(([key, val]) => {
+        if (val !== undefined && val !== null && val !== '') {
+          cleanParams[key] = String(val);
+        }
+      });
+      const searchParams = new URLSearchParams(cleanParams).toString();
+      const url = `/api/v1/listings${searchParams ? `?${searchParams}` : ''}`;
+      const response = await apiClient.getWithMeta<ListingCardItem[]>(url);
+      return {
+        data: response.data,
+        meta: response.meta as ListingsApiResponse['meta'],
+      };
+    },
+    getNextPageParam: (lastPage) => {
+      if (lastPage.meta.page < lastPage.meta.totalPages) {
+        return lastPage.meta.page + 1;
+      }
+      return undefined;
     },
   });
 }

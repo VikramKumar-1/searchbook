@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useRouter } from 'next/navigation';
-import { Loader2, Plus, X, Check } from 'lucide-react';
+import { Loader2, Plus, X, Check, Building2 } from 'lucide-react';
 import { LocationPicker } from './LocationPicker';
 import { ImageGalleryUploader } from './ImageGalleryUploader';
 import { useAuthStore } from '@frontend/stores/authStore';
@@ -65,6 +65,7 @@ export function ListingForm({ categorySlug }: { categorySlug: string }) {
   const [newAmenity, setNewAmenity] = useState('');
 
   const user = useAuthStore((s) => s.user);
+  const setUser = useAuthStore((s) => s.setUser);
   const openAuthModal = useAuthStore((s) => s.openAuthModal);
 
   const isFixed = FIXED_CATEGORIES.includes(categorySlug);
@@ -126,6 +127,29 @@ export function ListingForm({ categorySlug }: { categorySlug: string }) {
     form.setValue('amenities', amenities.filter(a => a !== am));
   };
 
+  if (!user) {
+    return (
+      <div className="bg-white rounded-3xl border-2 border-gray-100 p-8 sm:p-12 text-center max-w-md mx-auto my-12 shadow-sm space-y-5 animate-in fade-in zoom-in-95 duration-200">
+        <div className="w-14 h-14 rounded-2xl bg-blue-50 border border-blue-200 text-[#0033CC] flex items-center justify-center mx-auto shadow-xs">
+          <Building2 className="w-7 h-7" />
+        </div>
+        <div className="space-y-1.5">
+          <h2 className="text-xl font-black text-gray-900">Account Required to List</h2>
+          <p className="text-xs text-gray-500 leading-relaxed">
+            Please sign in to SearchBook first. Your listing and bookings will be securely linked to your account.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => openAuthModal('login', `/provider/create?category=${categorySlug}`)}
+          className="w-full bg-[#0033CC] hover:bg-[#002699] text-white font-bold text-sm py-3.5 rounded-2xl transition-all shadow-md cursor-pointer active:scale-[0.98]"
+        >
+          Sign In with Google to Continue
+        </button>
+      </div>
+    );
+  }
+
   const onSubmit = async (data: FormValues) => {
     if (!user) {
       setServerError('Please login to publish your listing.');
@@ -150,7 +174,9 @@ export function ListingForm({ categorySlug }: { categorySlug: string }) {
         }
         return;
       }
-      alert('Listing created successfully!');
+      if (user && user.role !== 'PROVIDER') {
+        setUser({ ...user, role: 'PROVIDER' });
+      }
       router.push('/provider/dashboard');
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'An unexpected error occurred. Please check your connection.';

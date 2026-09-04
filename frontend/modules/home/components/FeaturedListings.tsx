@@ -1,6 +1,14 @@
+/**
+ * Featured Listings Component
+ * 
+ * Responsive Behavior:
+ * - Mobile (md:hidden): Displays first 4 cards in a horizontal scroll using mobile-scroll-x.
+ * - Desktop (md:grid): Displays all 8 cards in a standard multi-column grid layout.
+ */
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { useListings, ListingCardItem } from '@frontend/modules/listing/hooks/useListings';
 import { ListingCard } from '@frontend/modules/listing/components/ListingCard';
 import { Loader2 } from 'lucide-react';
@@ -28,20 +36,28 @@ export function FeaturedListings() {
         _count: { reviews: 24 + i }
       }));
 
+  // Alternate fallback images for featured section to make it look dynamic
+  const fallbackImages = [
+    '/services/flat.jpg',
+    'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?q=80&w=2069&auto=format&fit=crop',
+    '/services/tiffin.jpg',
+    'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=2075&auto=format&fit=crop'
+  ];
+
   return (
-    <section className="bg-white py-14 px-5 md:px-8">
+    <section className="clay-bg-mint md:bg-white py-6 md:py-14 px-4 md:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex items-end justify-between mb-8">
+        <div className="flex items-end justify-between mb-4 md:mb-8">
           <div>
-            <p className="text-xs font-bold text-[#0033CC] uppercase tracking-widest mb-1">Trending</p>
-            <h2 className="text-2xl md:text-4xl font-black text-[#0f172a] tracking-tight">
+            <p className="text-[10px] md:text-xs font-bold text-[#0033CC] uppercase tracking-widest mb-1">Trending</p>
+            <h2 className="text-lg md:text-4xl font-black text-[#0f172a] tracking-tight">
               Featured Listings
             </h2>
           </div>
-          <a href="/listings" className="text-sm font-bold text-[#0033CC] hover:underline hidden md:block">
+          <Link href="/listings" className="text-sm font-bold text-[#0033CC] hover:underline hidden md:block">
             View all →
-          </a>
+          </Link>
         </div>
 
         {/* Loading */}
@@ -59,28 +75,38 @@ export function FeaturedListings() {
           </div>
         )}
 
-        {/* Grid */}
+        {/* Listings Display */}
         {!isLoading && !isError && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-            {displayData.map((listing: ListingCardItem, index: number) => {
-              // Alternate fallback images for featured section to make it look dynamic
-              const images = [
-                '/api/services/flat',
-                'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?q=80&w=2069&auto=format&fit=crop',
-                '/api/services/tiffin',
-                'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=2075&auto=format&fit=crop'
-              ];
-              const fallback = images[index % images.length];
+          <>
+            {/* ═══ MOBILE LAYOUT — Horizontal scroll cards ═══ */}
+            <div className="md:hidden mobile-scroll-x will-change-scroll px-5 -mx-5">
+              {displayData.slice(0, 4).map((listing: ListingCardItem, index: number) => {
+                const fallback = fallbackImages[index % fallbackImages.length];
+                return (
+                  <div key={listing.id} className="w-[260px]">
+                    <ListingCard 
+                      listing={listing} 
+                      fallbackImage={fallback}
+                    />
+                  </div>
+                );
+              })}
+            </div>
 
-              return (
-                <ListingCard 
-                  key={listing.id} 
-                  listing={listing} 
-                  fallbackImage={fallback}
-                />
-              );
-            })}
-          </div>
+            {/* ═══ DESKTOP LAYOUT — Grid ═══ */}
+            <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+              {displayData.map((listing: ListingCardItem, index: number) => {
+                const fallback = fallbackImages[index % fallbackImages.length];
+                return (
+                  <ListingCard 
+                    key={listing.id} 
+                    listing={listing} 
+                    fallbackImage={fallback}
+                  />
+                );
+              })}
+            </div>
+          </>
         )}
       </div>
     </section>

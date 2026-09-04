@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { ListingDetailData } from '../hooks/useListings';
 import { HourlyBookingModal } from '@frontend/components/booking/HourlyBookingModal';
+import { useAuthStore } from '@frontend/stores/authStore';
 
 function getAmenityIcon(amenity: string) {
   const text = amenity.toLowerCase();
@@ -211,7 +212,18 @@ interface ListingDetailViewProps {
 }
 
 export function ListingDetailView({ listing }: ListingDetailViewProps) {
+  const user = useAuthStore((s) => s.user);
+  const openAuthModal = useAuthStore((s) => s.openAuthModal);
+
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+
+  const handleOpenBooking = () => {
+    if (!user) {
+      openAuthModal('phone-otp');
+      return;
+    }
+    setIsBookingModalOpen(true);
+  };
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   const [reviewPage, setReviewPage] = useState(1);
@@ -883,7 +895,7 @@ export function ListingDetailView({ listing }: ListingDetailViewProps) {
                     {/* Primary CTA: Book Hourly */}
                     <button
                       type="button"
-                      onClick={() => setIsBookingModalOpen(true)}
+                      onClick={handleOpenBooking}
                       className="w-full bg-gradient-to-r from-[#0033CC] via-[#1A56DB] to-[#2563EB] hover:from-[#0029A3] hover:to-[#1D4ED8] text-white font-black text-xs sm:text-sm py-3.5 rounded-[20px] transition-all flex items-center justify-center gap-2 cursor-pointer shadow-[0_12px_26px_rgba(0,51,204,0.38),inset_0_2px_4px_rgba(255,255,255,0.35)] hover:scale-[1.02] active:scale-[0.98]"
                     >
                       <span>Book Hourly / Daily Stay</span>
@@ -1068,7 +1080,7 @@ export function ListingDetailView({ listing }: ListingDetailViewProps) {
           {isHotel ? (
             <button
               type="button"
-              onClick={() => setIsBookingModalOpen(true)}
+              onClick={handleOpenBooking}
               className="bg-gradient-to-r from-[#0033CC] to-[#2563EB] text-white text-xs font-black px-4 py-2.5 rounded-xl shadow-[0_4px_14px_rgba(0,51,204,0.35)] flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all"
             >
               <span>Book Hourly</span>

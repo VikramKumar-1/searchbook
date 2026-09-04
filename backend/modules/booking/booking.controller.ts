@@ -3,15 +3,15 @@ import { bookingService } from './booking.service';
 import { createBookingSchema, updateBookingStatusSchema } from './booking.validator';
 import { apiSuccess } from '@backend/utils/apiResponse';
 import { handleError } from '@backend/middleware/errorHandler.middleware';
-import { getOptionalAuthUser } from '@backend/middleware/auth.middleware';
+import { getAuthUser, getOptionalAuthUser } from '@backend/middleware/auth.middleware';
 
 export const bookingController = {
   async create(req: NextRequest) {
     try {
       const body = await req.json();
       const input = createBookingSchema.parse(body);
-      const optionalUser = getOptionalAuthUser(req);
-      const booking = await bookingService.createHourlyBooking(input, optionalUser?.userId);
+      const authUser = getAuthUser(req);
+      const booking = await bookingService.createHourlyBooking(input, authUser.userId);
       return apiSuccess(booking, undefined, 201);
     } catch (error) {
       return handleError(error);

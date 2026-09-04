@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { useCreateBooking } from '@frontend/modules/booking/hooks/useBookings';
 import { convertToWebP } from '@frontend/lib/imageCompressor';
+import { useAuthStore } from '@frontend/stores/authStore';
 
 interface HourlyBookingModalProps {
   isOpen: boolean;
@@ -184,10 +185,27 @@ export function HourlyBookingModal({ isOpen, onClose, listing }: HourlyBookingMo
     }
   }, [isOpen]);
 
+  const user = useAuthStore((s) => s.user);
+  const openAuthModal = useAuthStore((s) => s.openAuthModal);
+
+  const isGenericName = (n?: string | null) => !n || ['Verified Guest', 'Google User', 'Apple User', 'User'].includes(n.trim());
+
   const [guests, setGuests] = useState(2);
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
+  const [name, setName] = useState(user?.name && !isGenericName(user.name) ? user.name : '');
+  const [phone, setPhone] = useState(user?.phone || '');
   const [error, setError] = useState('');
+
+  // Auto-sync guest fields whenever user logs in or profile updates
+  useEffect(() => {
+    if (user) {
+      if (user.name && !isGenericName(user.name)) {
+        setName(user.name);
+      }
+      if (user.phone) {
+        setPhone(user.phone);
+      }
+    }
+  }, [user]);
 
   // Express Check-in
   const [isExpressCheckInOpen, setIsExpressCheckInOpen] = useState(false);
@@ -219,17 +237,30 @@ export function HourlyBookingModal({ isOpen, onClose, listing }: HourlyBookingMo
 
   const handleContinueToGuest = () => {
     setError('');
+    if (!user) {
+      openAuthModal('phone-otp');
+      return;
+    }
     setActiveTab('guest');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim()) {
-      setError('Please enter guest name');
+    if (!user) {
+      openAuthModal('phone-otp');
+      setError('Please login or verify your mobile number with OTP to confirm booking.');
       return;
     }
-    if (!phone.trim() || phone.trim().length < 10) {
-      setError('Please enter a valid 10-digit mobile number');
+
+    const resolvedName = (name.trim() || user.name || '').trim();
+    const resolvedPhone = (user.phone || phone || '').replace(/\D/g, '').trim();
+
+    if (!resolvedName || isGenericName(resolvedName)) {
+      setError('Please enter your full name for hotel check-in');
+      return;
+    }
+    if (!resolvedPhone || resolvedPhone.length < 10) {
+      setError('Please enter a valid 10-digit mobile number for hotel reception check-in');
       return;
     }
 
@@ -237,8 +268,8 @@ export function HourlyBookingModal({ isOpen, onClose, listing }: HourlyBookingMo
     try {
       const result = await createBookingMutation.mutateAsync({
         listingId: listing.id,
-        guestName: name.trim(),
-        guestPhone: phone.trim(),
+        guestName: resolvedName,
+        guestPhone: resolvedPhone,
         checkInDate: date,
         checkInTime: resolvedCheckIn,
         checkOutTime: resolvedCheckOut,
@@ -681,10 +712,57 @@ export function HourlyBookingModal({ isOpen, onClose, listing }: HourlyBookingMo
                     </span>
                   </div>
 
-                  {/* Guest Name & Mobile */}
-                  <div className="bg-white p-4.5 rounded-[26px] border-2 border-white shadow-[0_6px_18px_rgba(30,70,120,0.06),inset_0_2px_4px_rgba(255,255,255,0.95)] space-y-3">
+                  {/* Guest Verification Status Banner */}
+                  {user ? (
+                    <div className="bg-[#E6F4EA] border border-[#A8DAB5] p-3 rounded-[20px] flex items-center justify-between shadow-2xs">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-full bg-[#1E8E3E] text-white flex items-center justify-center font-black text-xs shrink-0">
+                          {user.name.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <span className="text-xs font-black text-gray-900 block">{user.name}</span>
+                          <span className="text-[10px] font-bold text-[#137333] flex items-center gap-1">
+                            <CheckCircle2 className="w-3 h-3" />
+                            Verified Guest: +91 {user.phone || phone}
+                          </span>
+                        </div>
+                      </div>
+                      <span className="text-[9px] font-black text-[#137333] bg-white px-2.5 py-0.5 rounded-full border border-[#CEEAD6]">
+                        Logged In
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200/90 p-4 rounded-[22px] space-y-2.5 shadow-2xs">
+                      <div className="flex items-center gap-2">
+                        <ShieldCheck className="w-4 h-4 text-[#0033CC] shrink-0" />
+                        <span className="text-xs font-black text-gray-900">Mobile Verification Required</span>
+                      </div>
+                      <p className="text-[11px] text-gray-600 leading-relaxed font-medium">
+                        To guarantee your room reservation and pay at hotel desk, please login with your mobile number.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => openAuthModal('phone-otp')}
+                        className="w-full bg-[#0033CC] text-white font-bold text-xs py-3 rounded-xl hover:bg-[#002699] transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer"
+                      >
+                        <Phone className="w-3.5 h-3.5" />
+                        Verify Mobile Number with OTP
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Guest Name & Mobile Form */}
+                  <div className="bg-white p-4.5 rounded-[26px] border-2 border-white shadow-[0_6px_18px_rgba(30,70,120,0.06),inset_0_2px_4px_rgba(255,255,255,0.95)] space-y-3.5">
+                    {/* Primary Guest Name */}
                     <div>
-                      <label className="block text-[11px] font-bold text-gray-700 mb-1">Primary Guest Full Name</label>
+                      <div className="flex items-center justify-between mb-1">
+                        <label className="text-[11px] font-bold text-gray-700">Primary Guest Full Name</label>
+                        {user?.name && !isGenericName(user.name) && (
+                          <span className="text-[9px] text-[#2F6B4F] font-bold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                            Auto-filled from Profile ✓
+                          </span>
+                        )}
+                      </div>
                       <div className="relative">
                         <input
                           type="text"
@@ -697,19 +775,43 @@ export function HourlyBookingModal({ isOpen, onClose, listing }: HourlyBookingMo
                       </div>
                     </div>
 
-                    <div>
-                      <label className="block text-[11px] font-bold text-gray-700 mb-1">10-Digit Mobile Number</label>
-                      <div className="relative">
-                        <input
-                          type="tel"
-                          value={phone}
-                          onChange={(e) => setPhone(e.target.value)}
-                          placeholder="9876543210"
-                          className="w-full bg-[#F0F5FB] border-2 border-white rounded-[16px] pl-9 pr-3 py-2.5 text-xs font-bold text-gray-900 shadow-2xs focus:outline-none focus:border-[#0033CC]"
-                        />
-                        <Phone className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                    {/* Mobile Number Handling */}
+                    {user?.phone ? (
+                      /* If logged in via Phone OTP: DO NOT ASK FOR MOBILE NUMBER! Show locked verified badge! */
+                      <div className="bg-[#F0F5FB] border border-[#CBD5E1] rounded-[18px] p-3 flex items-center justify-between shadow-2xs">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-7 h-7 rounded-xl bg-[#0033CC] text-white flex items-center justify-center shrink-0">
+                            <Phone className="w-3.5 h-3.5" />
+                          </div>
+                          <div>
+                            <span className="text-[10px] text-gray-500 font-bold uppercase block">Verified Mobile Number</span>
+                            <strong className="text-xs font-black text-gray-900">+91 {user.phone}</strong>
+                          </div>
+                        </div>
+                        <span className="text-[9px] font-black text-[#0033CC] bg-white px-2.5 py-0.5 rounded-full border border-[#CCE1FD]">
+                          Sent to Hotel ✓
+                        </span>
                       </div>
-                    </div>
+                    ) : (
+                      /* If logged in via Google/Email without phone: Ask for 10-digit mobile */
+                      <div>
+                        <div className="flex items-center justify-between mb-1">
+                          <label className="text-[11px] font-bold text-gray-700">10-Digit Mobile Number</label>
+                          <span className="text-[9px] text-gray-400 font-bold">For Hotel Check-in</span>
+                        </div>
+                        <div className="relative">
+                          <input
+                            type="tel"
+                            maxLength={10}
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
+                            placeholder="9876543210"
+                            className="w-full bg-[#F0F5FB] border-2 border-white rounded-[16px] pl-9 pr-3 py-2.5 text-xs font-bold text-gray-900 shadow-2xs focus:outline-none focus:border-[#0033CC]"
+                          />
+                          <Phone className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Optional Express Check-in */}

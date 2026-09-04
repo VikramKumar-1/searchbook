@@ -2,7 +2,7 @@ import 'server-only';
 import { listingRepository } from './listing.repository';
 import { ListingQuery } from './listing.validator';
 import { getPaginationMeta } from '../../utils/pagination';
-import { haversineDistance, calculateScore } from '@backend/utils/geo';
+import { haversineDistance, calculateScore, interleaveCategoriesRoundRobin } from '@backend/utils/geo';
 
 interface ScoredListing {
   distanceKm: number | null;
@@ -61,8 +61,14 @@ export const listingService = {
         .filter((l): l is NonNullable<typeof l> => l !== null)
         .sort((a, b) => b.score - a.score); // Best score first
 
+      // If user is searching "Near Me" across ALL categories, apply DSA Stratified Round-Robin Interleaving
+      // to ensure a balanced, diverse feed (Flats, PGs, Hotels, Tiffin, Services) near their GPS
+      const finalFeed = !query.categorySlug
+        ? interleaveCategoriesRoundRobin(scoredListings, query.limit)
+        : scoredListings;
+
       return {
-        data: scoredListings,
+        data: finalFeed,
         meta: { ...meta, total: scoredListings.length },
       };
     }
@@ -137,8 +143,7 @@ export const listingService = {
     const baseSlug = input.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
     const uniqueSlug = `${baseSlug}-${Math.random().toString(36).substring(2, 8)}`;
 
-    // 3. Create listing
-    return listingRepository.create({
+    const created = await listingRepository.create({
       title: input.title,
       slug: uniqueSlug,
       description: input.description,
@@ -164,6 +169,16 @@ export const listingService = {
       cityId: city.id,
       localityId,
     });
+
+    // 4. Upgrade user's role to PROVIDER so they get access to dashboard
+    try {
+      await prisma.user.update({
+        where: { id: userId },
+        data: { role: 'PROVIDER' },
+      });
+    } catch {}
+
+    return created;
   },
 
   async getProviderDashboard(userId: string) {
