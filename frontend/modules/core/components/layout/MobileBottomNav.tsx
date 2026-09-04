@@ -24,6 +24,7 @@ import React from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { Home, Search, CalendarCheck, User } from 'lucide-react';
+import { useLocationStore } from '@frontend/stores/locationStore';
 
 interface NavItem {
   label: string;
@@ -62,6 +63,7 @@ const NAV_ITEMS: NavItem[] = [
 
 export function MobileBottomNav() {
   const pathname = usePathname();
+  const openSearchModal = useLocationStore((s) => s.openSearchModal);
 
   // Hide mobile bottom nav on listing detail pages to prevent overlapping the sticky booking CTA bar
   const segments = pathname.split('/').filter(Boolean);
@@ -93,6 +95,12 @@ export function MobileBottomNav() {
             <Link
               key={item.href}
               href={item.href}
+              onClick={(e) => {
+                if (item.label === 'Search') {
+                  e.preventDefault();
+                  openSearchModal();
+                }
+              }}
               className={`flex flex-col items-center justify-center gap-1 flex-1 py-1 rounded-2xl transition-all ${
                 active
                   ? 'text-[#0033CC]'

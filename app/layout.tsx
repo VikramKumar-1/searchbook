@@ -1,5 +1,5 @@
-import type { Metadata } from 'next';
-import { Plus_Jakarta_Sans } from 'next/font/google';
+import type { Metadata, Viewport } from 'next';
+import { Plus_Jakarta_Sans, Outfit } from 'next/font/google';
 import './globals.css';
 import { QueryProvider } from '@frontend/providers/QueryProvider';
 import { AuthModalProvider } from '@frontend/providers/AuthModalProvider';
@@ -15,6 +15,19 @@ const plusJakartaSans = Plus_Jakarta_Sans({
   weight: ['400', '500', '600', '700', '800'],
 });
 
+const outfit = Outfit({
+  subsets: ['latin'],
+  variable: '--font-display',
+  display: 'swap',
+  weight: ['500', '600', '700', '800', '900'],
+});
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
   title: 'SearchBook | Local City Marketplace',
@@ -27,7 +40,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={plusJakartaSans.variable}>
+    <html lang="en" className={`${plusJakartaSans.variable} ${outfit.variable}`}>
       <body className={`${plusJakartaSans.className} font-sans bg-slate-50 text-slate-900 antialiased flex flex-col min-h-screen w-full max-w-full overflow-x-hidden`}>
         <QueryProvider>
           <Navbar />

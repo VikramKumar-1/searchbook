@@ -74,6 +74,7 @@ export function ListingCard({ listing, fallbackImage }: ListingCardProps) {
         {/* Clickable Area for Image and Details */}
         <Link 
           href={`/${listing.city?.slug || 'city'}/${listing.category?.slug || 'hotels'}/${listing.slug}`} 
+          prefetch={true}
           className="flex flex-col flex-1"
         >
           {/* Nested Liquid Image Container */}

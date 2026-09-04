@@ -769,7 +769,7 @@ export function HourlyBookingModal({ isOpen, onClose, listing }: HourlyBookingMo
                           value={name}
                           onChange={(e) => setName(e.target.value)}
                           placeholder="e.g. Rahul Sharma"
-                          className="w-full bg-[#F0F5FB] border-2 border-white rounded-[16px] pl-9 pr-3 py-2.5 text-xs font-bold text-gray-900 shadow-2xs focus:outline-none focus:border-[#0033CC]"
+                          className="w-full bg-[#F0F5FB] border-2 border-white rounded-[16px] pl-9 pr-3 py-2.5 text-[16px] md:text-xs font-bold text-gray-900 shadow-2xs focus:outline-none focus:border-[#0033CC]"
                         />
                         <User className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
                       </div>
@@ -806,7 +806,7 @@ export function HourlyBookingModal({ isOpen, onClose, listing }: HourlyBookingMo
                             value={phone}
                             onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
                             placeholder="9876543210"
-                            className="w-full bg-[#F0F5FB] border-2 border-white rounded-[16px] pl-9 pr-3 py-2.5 text-xs font-bold text-gray-900 shadow-2xs focus:outline-none focus:border-[#0033CC]"
+                            className="w-full bg-[#F0F5FB] border-2 border-white rounded-[16px] pl-9 pr-3 py-2.5 text-[16px] md:text-xs font-bold text-gray-900 shadow-2xs focus:outline-none focus:border-[#0033CC]"
                           />
                           <Phone className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
                         </div>

@@ -1,7 +1,7 @@
+import { cache } from 'react';
 import { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
 import { listingService } from '@backend/modules/listing/listing.service';
-import { ListingDetailView } from '@frontend/modules/listing/components/ListingDetailView';
 
 interface PageProps {
   params: Promise<{
@@ -9,10 +9,14 @@ interface PageProps {
   }>;
 }
 
+const getCachedListing = cache(async (slug: string) => {
+  return listingService.getListingBySlug(slug);
+});
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   try {
-    const listing = await listingService.getListingBySlug(slug);
+    const listing = await getCachedListing(slug);
     if (!listing) return { title: 'Hotel Not Found | SearchBook' };
 
     const cityName = listing.city?.name || 'India';
@@ -38,7 +42,7 @@ export default async function DirectListingPage({ params }: PageProps) {
   
   let listing;
   try {
-    listing = await listingService.getListingBySlug(slug);
+    listing = await getCachedListing(slug);
   } catch (err) {
     console.error(`[DirectListingPage Error] Failed to fetch listing for slug "${slug}":`, err);
     notFound();

@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { listingService } from '@backend/modules/listing/listing.service';
@@ -12,13 +13,19 @@ interface PageProps {
   }>;
 }
 
+// React cache() deduplicates calls to the exact same slug between generateMetadata and ListingPage
+// within a single request, cutting server database calls from 2 down to 1.
+const getCachedListing = cache(async (slug: string) => {
+  return listingService.getListingBySlug(slug);
+});
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { city, slug } = await params;
   if (city?.startsWith('.') || slug?.endsWith('.json')) {
     return { title: 'Not Found | SearchBook' };
   }
   try {
-    const listing = await listingService.getListingBySlug(slug);
+    const listing = await getCachedListing(slug);
     if (!listing) return { title: 'Hotel Not Found | SearchBook' };
 
     const cityName = listing.city?.name || 'India';
@@ -61,7 +68,7 @@ export default async function ListingPage({ params }: PageProps) {
   
   let listing;
   try {
-    listing = await listingService.getListingBySlug(slug);
+    listing = await getCachedListing(slug);
   } catch (err) {
     console.error(`[ListingPage Error] Could not load listing for slug "${slug}":`, err);
     notFound();
@@ -73,33 +80,68 @@ export default async function ListingPage({ params }: PageProps) {
   }
 
   const cityName = listing.city?.name || 'India';
+  const citySlug = listing.city?.slug || 'city';
+  const categorySlug = listing.category?.slug || 'services';
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://searchbook.in';
 
-  // JSON-LD Structured Data Schema for Google Rich Snippets
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Hotel',
-    name: listing.title,
-    description: listing.description || `Verified listing in ${cityName}`,
-    image: listing.photos || [],
-    address: {
-      '@type': 'PostalAddress',
-      streetAddress: listing.address,
-      addressLocality: cityName,
-      addressCountry: 'IN',
+  // JSON-LD Structured Data Schema for Google Rich Snippets & BreadcrumbList
+  const jsonLd = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Home',
+          item: `${baseUrl}`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: cityName,
+          item: `${baseUrl}/${citySlug}`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: listing.category?.name || 'Services',
+          item: `${baseUrl}/${citySlug}/${categorySlug}`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 4,
+          name: listing.title,
+          item: `${baseUrl}/${citySlug}/${categorySlug}/${listing.slug}`,
+        },
+      ],
     },
-    geo: listing.latitude && listing.longitude ? {
-      '@type': 'GeoCoordinates',
-      latitude: listing.latitude,
-      longitude: listing.longitude,
-    } : undefined,
-    priceRange: listing.price ? `₹${listing.price}` : '₹199 - ₹899',
-    telephone: listing.contactPhone,
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: '4.8',
-      reviewCount: listing._count?.reviews || '24',
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Hotel',
+      name: listing.title,
+      description: listing.description || `Verified listing in ${cityName}`,
+      image: listing.photos || [],
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: listing.address,
+        addressLocality: cityName,
+        addressCountry: 'IN',
+      },
+      geo: listing.latitude && listing.longitude ? {
+        '@type': 'GeoCoordinates',
+        latitude: listing.latitude,
+        longitude: listing.longitude,
+      } : undefined,
+      priceRange: listing.price ? `₹${listing.price}` : '₹199 - ₹899',
+      telephone: listing.contactPhone,
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: '4.8',
+        reviewCount: listing._count?.reviews || '24',
+      },
     },
-  };
+  ];
 
   // Convert decimal/null types for client component with bulletproof defaults
   const clientListing: ListingDetailData = {

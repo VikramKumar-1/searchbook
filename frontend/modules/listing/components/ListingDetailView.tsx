@@ -14,6 +14,7 @@ import {
 import { ListingDetailData } from '../hooks/useListings';
 import { HourlyBookingModal } from '@frontend/components/booking/HourlyBookingModal';
 import { useAuthStore } from '@frontend/stores/authStore';
+import { ListingBreadcrumb } from './ListingBreadcrumb';
 
 function getAmenityIcon(amenity: string) {
   const text = amenity.toLowerCase();
@@ -409,11 +410,14 @@ export function ListingDetailView({ listing }: ListingDetailViewProps) {
           {/* 3. TITLE & CORE INFO CLAY CARD */}
           <div className="relative z-10 -mt-3 mx-3 rounded-[26px] p-4 bg-[#F8FAFD] border-2 border-white shadow-[0_10px_25px_rgba(30,70,120,0.08),inset_0_2px_4px_rgba(255,255,255,0.95)] space-y-2.5">
             <div>
-              <div className="flex items-center gap-1.5">
-                <span className="text-[10px] font-black bg-[#E1EDF6] text-[#0033CC] px-2.5 py-0.5 rounded-full border border-white shadow-2xs">
-                  {listing.category.name}
-                </span>
-                <span className="text-[10px] font-bold text-gray-500">● {listing.city.name}</span>
+              {/* Mobile Breadcrumb Trail */}
+              <div className="mb-2">
+                <ListingBreadcrumb
+                  city={listing.city}
+                  category={listing.category}
+                  title={listing.title}
+                  className="w-full text-[10px] py-1 px-2.5"
+                />
               </div>
               <h1 className="text-lg font-black text-[#0f172a] mt-1.5 leading-snug">
                 {listing.title}
@@ -923,24 +927,13 @@ export function ListingDetailView({ listing }: ListingDetailViewProps) {
         <div className="hidden md:block">
           {/* ── BREADCRUMBS ── */}
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
-          <nav className="flex items-center gap-2 text-xs text-gray-500 overflow-x-auto whitespace-nowrap">
-            <Link href="/" className="bg-[#F8FAFD] hover:bg-white text-gray-700 px-4 py-2 rounded-full border-2 border-white shadow-[0_4px_10px_rgba(0,0,0,0.04),inset_0_1px_2px_rgba(255,255,255,0.95)] font-bold transition-colors">
-              Home
-            </Link>
-            <ChevronRight className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-            <Link href={`/?city=${listing.city.slug}`} className="bg-[#F8FAFD] hover:bg-white text-gray-700 px-4 py-2 rounded-full border-2 border-white shadow-[0_4px_10px_rgba(0,0,0,0.04),inset_0_1px_2px_rgba(255,255,255,0.95)] font-bold transition-colors">
-              {listing.city.name}
-            </Link>
-            <ChevronRight className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-            <Link href={`/?category=${listing.category.slug}`} className="bg-[#F8FAFD] hover:bg-white text-gray-700 px-4 py-2 rounded-full border-2 border-white shadow-[0_4px_10px_rgba(0,0,0,0.04),inset_0_1px_2px_rgba(255,255,255,0.95)] font-bold transition-colors">
-              {listing.category.name}
-            </Link>
-            <ChevronRight className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-            <span className="text-[#0f172a] font-extrabold px-4 py-2 bg-[#F8FAFD] rounded-full border-2 border-white shadow-[0_4px_10px_rgba(0,0,0,0.04),inset_0_1px_2px_rgba(255,255,255,0.95)] truncate max-w-[240px] sm:max-w-none">
-              {listing.title}
-            </span>
-          </nav>
-        </div>
+            <ListingBreadcrumb
+              city={listing.city}
+              category={listing.category}
+              title={listing.title}
+              className="py-2 px-4 text-xs shadow-[0_4px_10px_rgba(0,0,0,0.04),inset_0_1px_2px_rgba(255,255,255,0.95)]"
+            />
+          </div>
 
         {/* ── TITLE & TOP BAR ── */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-6">

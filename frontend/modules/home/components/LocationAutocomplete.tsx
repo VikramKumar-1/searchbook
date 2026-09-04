@@ -101,7 +101,7 @@ export function LocationAutocomplete() {
         onChange={(e) => setQuery(e.target.value)}
         onFocus={() => setIsFocused(true)}
         onClick={() => setIsFocused(true)}
-        className="w-full pl-9 pr-3 py-3 rounded-xl bg-gray-50 text-black text-xs font-semibold border border-gray-100 focus:bg-white focus:border-[#0033CC]/30 focus:outline-none transition-all cursor-text shadow-2xs"
+        className="w-full pl-9 pr-3 py-3 rounded-xl bg-gray-50 text-black text-[16px] md:text-xs font-semibold border border-gray-100 focus:bg-white focus:border-[#0033CC]/30 focus:outline-none transition-all cursor-text shadow-2xs"
       />
 
       {isFocused && (

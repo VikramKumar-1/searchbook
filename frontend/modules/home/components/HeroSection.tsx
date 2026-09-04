@@ -19,7 +19,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Search, MapPin, Grid, CheckCircle2, Home, Utensils, Wrench, Building, Clock, Mic, ShoppingBag, Sparkles, Gift, Headphones } from 'lucide-react';
+import { Search, MapPin, Grid, CheckCircle2, Home, Utensils, Wrench, Building, Clock, Mic, ShoppingBag, Gift, Headphones, Bed } from 'lucide-react';
 import { LocationAutocomplete } from '@frontend/modules/home/components/LocationAutocomplete';
 import { useCategoryNavStore, CATEGORY_THEMES, MobileCategoryKey } from '@frontend/stores/categoryNavStore';
 import { useLocationStore } from '@frontend/stores/locationStore';
@@ -110,7 +110,7 @@ interface BentoCategoryData {
 
 const MOBILE_CATEGORY_TABS: { key: MobileCategoryKey; label: string; icon: React.ReactNode }[] = [
   { key: 'all', label: 'All', icon: <Home className="w-5 h-5 stroke-[2.2]" /> },
-  { key: 'pg-hostel', label: 'PG/Hostel', icon: <FluentEmoji name="Bed" size={24} fallback="🛏️" /> },
+  { key: 'pg-hostel', label: 'PG/Hostel', icon: <Bed className="w-5 h-5 stroke-[2]" /> },
   { key: 'hourly-hotels', label: 'Hourly', icon: <Clock className="w-5 h-5 stroke-[2]" /> },
   { key: 'flats', label: 'Flats', icon: <Building className="w-5 h-5 stroke-[2]" /> },
   { key: 'services', label: 'Services', icon: <Wrench className="w-5 h-5 stroke-[2]" /> },
@@ -524,17 +524,17 @@ export function HeroSection() {
         {/* 3. SearchBook Hero Banner (Dynamic based on selected category & theme) */}
         <div 
           key={`banner-${mobileTab}`}
-          className={`relative rounded-2xl overflow-hidden mb-3.5 bg-gradient-to-r ${theme.bannerGradient} p-3.5 border border-white/60 shadow-2xs transition-all duration-500 animate-in fade-in`}
+          className={`relative rounded-2xl overflow-hidden mb-3.5 bg-gradient-to-r ${theme.bannerGradient} p-3.5 min-h-[82px] flex items-center border border-white/60 shadow-2xs transition-all duration-500 animate-in fade-in`}
         >
-          <div className="flex items-center justify-between relative z-10">
+          <div className="flex items-center justify-between relative z-10 w-full">
             <div>
-              <p className={`text-[10px] font-black tracking-[0.2em] ${theme.bannerTagText} uppercase`}>
+              <p className={`text-[9.5px] font-display font-black tracking-[0.18em] ${theme.bannerTagText} uppercase mb-0.5`}>
                 {currentBento.banner.tag}
               </p>
-              <h3 className={`text-2xl font-serif italic font-bold ${theme.bannerTitleText} leading-tight mt-0.5`}>
+              <h3 className={`text-[20px] font-display font-black tracking-tight ${theme.bannerTitleText} leading-tight mt-0.5 clay-title`}>
                 {currentBento.banner.title}
               </h3>
-              <p className={`text-[10px] ${theme.bannerTagText} font-medium mt-0.5`}>
+              <p className={`text-[10.5px] ${theme.bannerTagText} font-medium mt-0.5`}>
                 {currentBento.banner.subtitle}
               </p>
             </div>
@@ -559,12 +559,12 @@ export function HeroSection() {
             className={`${currentBento.tallCard.bgGradient || theme.bentoBg} rounded-[24px] p-3 flex flex-col justify-between text-white border border-white/30 shadow-[0_12px_24px_-6px_rgba(0,0,0,0.18),inset_0_1.5px_1px_rgba(255,255,255,0.4)] overflow-hidden h-[230px] relative active:scale-95 transition-all duration-300 hover:shadow-xl group backdrop-blur-md`}
           >
             <div className="relative z-10">
-              <h4 className="text-[13px] font-extrabold text-white leading-tight whitespace-pre-line drop-shadow-sm">
+              <h4 className="text-[13.5px] font-display font-black text-white leading-tight whitespace-pre-line drop-shadow-sm">
                 {currentBento.tallCard.title}
               </h4>
 
               <div className="mt-2.5">
-                <div className="bg-white/95 text-slate-900 font-black text-[11px] px-2.5 py-0.5 rounded-full inline-flex items-center shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
+                <div className="bg-white/95 text-slate-900 font-display font-black text-[11px] px-2.5 py-0.5 rounded-full inline-flex items-center shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
                   {currentBento.tallCard.priceBadge}
                 </div>
               </div>
@@ -591,11 +591,11 @@ export function HeroSection() {
               className={`${currentBento.col2Top.bgGradient || theme.bentoBg} rounded-[24px] p-2.5 flex flex-col justify-between text-white border border-white/30 shadow-[0_10px_20px_-6px_rgba(0,0,0,0.16),inset_0_1.5px_1px_rgba(255,255,255,0.4)] overflow-hidden h-[111px] relative active:scale-95 transition-all duration-300 hover:shadow-xl group backdrop-blur-md`}
             >
               <div className="relative z-10">
-                <h4 className="text-[11px] font-extrabold text-white leading-tight whitespace-pre-line drop-shadow-sm">
+                <h4 className="text-[11.5px] font-display font-black text-white leading-tight whitespace-pre-line drop-shadow-sm">
                   {currentBento.col2Top.title}
                 </h4>
                 <div className="mt-1">
-                  <span className="inline-block px-2 py-0.5 rounded-full bg-black/20 backdrop-blur-md border border-white/25 text-[9px] font-black text-white tracking-tight shadow-xs">
+                  <span className="inline-block px-2 py-0.5 rounded-full bg-black/20 backdrop-blur-md border border-white/25 text-[9px] font-display font-black text-white tracking-tight shadow-xs">
                     {currentBento.col2Top.badge || currentBento.col2Top.price}
                   </span>
                 </div>
@@ -615,11 +615,11 @@ export function HeroSection() {
               className={`${currentBento.col2Bottom.bgGradient || theme.bentoBg} rounded-[24px] p-2.5 flex flex-col justify-between text-white border border-white/30 shadow-[0_10px_20px_-6px_rgba(0,0,0,0.16),inset_0_1.5px_1px_rgba(255,255,255,0.4)] overflow-hidden h-[111px] relative active:scale-95 transition-all duration-300 hover:shadow-xl group backdrop-blur-md`}
             >
               <div className="relative z-10">
-                <h4 className="text-[11px] font-extrabold text-white leading-tight whitespace-pre-line drop-shadow-sm">
+                <h4 className="text-[11.5px] font-display font-black text-white leading-tight whitespace-pre-line drop-shadow-sm">
                   {currentBento.col2Bottom.title}
                 </h4>
                 <div className="mt-1">
-                  <span className="inline-block px-2 py-0.5 rounded-full bg-black/20 backdrop-blur-md border border-white/25 text-[9px] font-black text-white tracking-tight shadow-xs">
+                  <span className="inline-block px-2 py-0.5 rounded-full bg-black/20 backdrop-blur-md border border-white/25 text-[9px] font-display font-black text-white tracking-tight shadow-xs">
                     {currentBento.col2Bottom.badge || currentBento.col2Bottom.price}
                   </span>
                 </div>
@@ -642,11 +642,11 @@ export function HeroSection() {
               className={`${currentBento.col3Top.bgGradient || theme.bentoBg} rounded-[24px] p-2.5 flex flex-col justify-between text-white border border-white/30 shadow-[0_10px_20px_-6px_rgba(0,0,0,0.16),inset_0_1.5px_1px_rgba(255,255,255,0.4)] overflow-hidden h-[111px] relative active:scale-95 transition-all duration-300 hover:shadow-xl group backdrop-blur-md`}
             >
               <div className="relative z-10">
-                <h4 className="text-[11px] font-extrabold text-white leading-tight whitespace-pre-line drop-shadow-sm">
+                <h4 className="text-[11.5px] font-display font-black text-white leading-tight whitespace-pre-line drop-shadow-sm">
                   {currentBento.col3Top.title}
                 </h4>
                 <div className="mt-1">
-                  <span className="inline-block px-2 py-0.5 rounded-full bg-black/20 backdrop-blur-md border border-white/25 text-[9px] font-black text-white tracking-tight shadow-xs">
+                  <span className="inline-block px-2 py-0.5 rounded-full bg-black/20 backdrop-blur-md border border-white/25 text-[9px] font-display font-black text-white tracking-tight shadow-xs">
                     {currentBento.col3Top.badge || currentBento.col3Top.price}
                   </span>
                 </div>
@@ -666,11 +666,11 @@ export function HeroSection() {
               className={`${currentBento.col3Bottom.bgGradient || theme.bentoBg} rounded-[24px] p-2.5 flex flex-col justify-between text-white border border-white/30 shadow-[0_10px_20px_-6px_rgba(0,0,0,0.16),inset_0_1.5px_1px_rgba(255,255,255,0.4)] overflow-hidden h-[111px] relative active:scale-95 transition-all duration-300 hover:shadow-xl group backdrop-blur-md`}
             >
               <div className="relative z-10">
-                <h4 className="text-[11px] font-extrabold text-white leading-tight whitespace-pre-line drop-shadow-sm">
+                <h4 className="text-[11.5px] font-display font-black text-white leading-tight whitespace-pre-line drop-shadow-sm">
                   {currentBento.col3Bottom.title}
                 </h4>
                 <div className="mt-1">
-                  <span className="inline-block px-2 py-0.5 rounded-full bg-black/20 backdrop-blur-md border border-white/25 text-[9px] font-black text-white tracking-tight shadow-xs">
+                  <span className="inline-block px-2 py-0.5 rounded-full bg-black/20 backdrop-blur-md border border-white/25 text-[9px] font-display font-black text-white tracking-tight shadow-xs">
                     {currentBento.col3Bottom.badge || currentBento.col3Bottom.price}
                   </span>
                 </div>

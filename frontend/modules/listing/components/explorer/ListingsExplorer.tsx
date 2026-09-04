@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { useInfiniteListings } from '@frontend/modules/listing/hooks/useListings';
 import { ListingCard } from '@frontend/modules/listing/components/ListingCard';
 import { useDebounce } from '@frontend/hooks/useDebounce';
-import { Search, MapPin, Navigation, Building2, X, Plus, Grid, Home, Building, Clock, Utensils, Briefcase, Wrench, Zap, Flame, Droplets, ThermometerSnowflake, Shirt } from 'lucide-react';
+import { Search, MapPin, Navigation, Building2, X, Plus, Grid, Home, Building, Clock, Utensils, Briefcase, Wrench, Zap, Flame, Droplets, ThermometerSnowflake, Shirt, Bed } from 'lucide-react';
 import Link from 'next/link';
 import { useLocationStore } from '@frontend/stores/locationStore';
 
@@ -13,7 +13,7 @@ const MemoizedListingCard = memo(ListingCard);
 
 const CATEGORIES = [
   { slug: '', label: 'All Categories', icon: Grid },
-  { slug: 'pg-hostel', label: 'Hostels & PGs', icon: Home },
+  { slug: 'pg-hostel', label: 'Hostels & PGs', icon: Bed },
   { slug: 'flats', label: 'Flats & Houses', icon: Building },
   { slug: 'hourly-hotels', label: 'Hourly Hotels', icon: Clock },
   { slug: 'tiffin', label: 'Mess & Tiffin', icon: Utensils },
@@ -141,11 +141,13 @@ function ListingsContent() {
           <div className="relative flex-1 w-full">
             <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
-              type="text"
+              type="search"
+              inputMode="search"
+              enterKeyHint="search"
               placeholder="Search by name, service, locality, or keyword..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:border-blue-500 focus:outline-none transition-all"
+              className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-[16px] md:text-sm focus:bg-white focus:border-blue-500 focus:outline-none transition-all"
             />
             {searchQuery && (
               <button
@@ -164,7 +166,7 @@ function ListingsContent() {
               <select
                 value={selectedCity}
                 onChange={(e) => handleCitySelect(e.target.value)}
-                className="w-full pl-9 pr-8 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:border-blue-500 focus:outline-none appearance-none cursor-pointer"
+                className="w-full pl-9 pr-8 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-[16px] md:text-sm focus:bg-white focus:border-blue-500 focus:outline-none appearance-none cursor-pointer"
               >
                 {CITIES.map((c) => (
                   <option key={c.slug} value={c.slug}>
